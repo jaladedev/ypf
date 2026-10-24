@@ -13,9 +13,11 @@ export type PostSummary = Pick<
 export function NewsCard({
   post,
   sizes = "(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw",
+  as: Heading = "h3",
 }: {
   post: PostSummary;
   sizes?: string;
+  as?: "h2" | "h3";
 }) {
   return (
     <article className="group rounded-card border-line shadow-card hover:shadow-pop relative flex flex-col overflow-hidden border bg-white transition-shadow">
@@ -29,14 +31,14 @@ export function NewsCard({
             <time dateTime={post.published_at}>{formatDate(post.published_at)}</time>
           ) : null}
         </div>
-        <h3 className="text-ink group-hover:text-brand-700 text-base font-semibold">
+        <Heading className="text-ink group-hover:text-brand-700 text-base font-semibold">
           <Link
             href={`/news/${post.slug}`}
             className="after:absolute after:inset-0 after:content-['']"
           >
             {post.title}
           </Link>
-        </h3>
+        </Heading>
         {post.excerpt ? (
           <p className="text-ink-muted line-clamp-2 text-sm">{post.excerpt}</p>
         ) : null}

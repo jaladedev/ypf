@@ -74,6 +74,10 @@ as the project owner like the statement above.
 
 ### Email
 
+Site emails (event confirmations, contact-form notifications) are sent with [Resend](https://resend.com).
+Set `RESEND_API_KEY`, `EMAIL_FROM` (a verified domain) and `ADMIN_NOTIFY_EMAIL` (comma-separated).
+Without a key emails are skipped and logged, so local development works unchanged.
+
 Supabase's built-in email is rate-limited and meant for development. Before launch, configure a
 custom SMTP provider in **Authentication → SMTP Settings** (this is Phase 6 in `TODO.md`).
 Email confirmation is on by default (`supabase/config.toml`).
@@ -97,7 +101,7 @@ Postgres and checks what visitors, members, editors and admins can read and writ
 ```
 src/
   app/                  routes (App Router)
-    (site)/               public pages with header + footer (home; /design in dev)
+    (site)/               public pages with header + footer (home, about, leadership, events, jobs, news, contact, legal; /design in dev)
     login/ forgot-password/ reset-password/ pending/   auth pages
     auth/callback  auth/signout                        auth route handlers
     dashboard/ admin/                                  protected areas (placeholders until Phases 4-5)
@@ -105,6 +109,8 @@ src/
   lib/
     supabase/           browser, server, admin (service role) and proxy clients
     auth/               getSession(), requireApprovedMember/Editor/Admin(), safeNext()
+  lib/data/             cached public queries (events, jobs, posts, leaders, settings)
+  lib/email/            Resend helper
   proxy.ts              refreshes the session; redirects signed-out visitors
   types/database.ts     database types (hand-maintained; regenerate with the Supabase CLI)
 supabase/

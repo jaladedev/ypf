@@ -15,9 +15,10 @@ Legend: `[ ]` to do, `[~]` partly done (see note), `[x]` done. Each phase ends w
 - [x] Event registration is open to anyone (name + email, no account needed). If the visitor is signed in, the registration is linked to their account.
 - [x] Membership is open to any young planner (no MNITP/RTP requirement). An admin still approves each member.
 - [x] Hosting: Vercel.
+- [x] Email: Resend (see open-questions list). Needs a verified sending domain (SPF/DKIM DNS records) before launch.
 
 ## Open questions (answer before or during the phase noted)
-- [ ] (Phase 1) Email provider for transactional mail: Supabase built-in SMTP for dev, then Resend or similar for production?
+- [x] (Phase 1) Email provider: Resend. App emails (contact notifications, event confirmations, approval decisions) go through the Resend API; Supabase auth emails (confirmation, magic link, reset) use Resend over SMTP in production.
 - [x] (Phase 1) Google sign-in: yes, at launch.
 - [x] (Phase 3) Event registration: open to anyone.
 - [x] (Phase 4) Who can be a member: any young planner.
@@ -99,23 +100,27 @@ Goal: reusable building blocks matching the mockups (deep green, clean cards, mo
 ## Phase 3: Public content
 Goal: all public pages, backed by real data.
 
-- [ ] **Home**: hero, stats strip, upcoming events, history teaser, latest news, featured jobs, partner logos
-- [ ] **About**: mission, vision, history, objectives, NITP relationship
-- [ ] **Leadership**: tabs for National Executives and Coordinators, grid of LeaderCards
-- [ ] **Events**: Upcoming/Past tabs, filter, list with date blocks, Register button
-- [ ] **Event detail**: overview, details panel (date, time, venue, deadline), features list, speakers, registration form (name + email, open to anyone, calls the `register_for_event` database function), add-to-calendar (.ics)
-- [ ] **Jobs**: search box, filters (location, specialisation, type, experience), list, pagination, deadline badges
-- [ ] **Job detail**: description, requirements, key details panel, Apply button (link or email), share buttons
-- [ ] **News**: category tabs, grid, pagination
-- [ ] **News article**: hero, body (markdown rendering), share, related articles
-- [ ] **Contact**: form (saved to `contact_messages` + email to admins), contact details, social links, spam protection (honeypot + rate limit)
-- [ ] Static pages: Privacy Policy, Terms
-- [ ] 404 and error pages
-- [ ] Jobs auto-hide after deadline (query-level filter now; scheduled archive job in Phase 6)
+- [x] **Home**: hero, stats strip, upcoming events, history teaser, latest news, featured jobs, partners (text, no logos yet)
+- [x] **About**: mission, vision, history, objectives, NITP relationship
+- [x] **Leadership**: tabs for National Executives and Coordinators, grid of LeaderCards
+- [x] **Events**: Upcoming/Past tabs, filter, list with date blocks, Register button
+- [x] **Event detail**: overview, details panel (date, time, venue, deadline), features list, speakers, registration form (name + email, open to anyone, calls the `register_for_event` database function), add-to-calendar (.ics)
+- [x] **Jobs**: search box, filters (location, specialisation, type, experience), list, pagination, deadline badges
+- [x] **Job detail**: description, requirements, key details panel, Apply button (link or email), share buttons
+- [x] **News**: category tabs, grid, pagination
+- [x] **News article**: hero, body (markdown rendering), share, related articles
+- [x] **Contact**: form (saved to `contact_messages` + email to admins), contact details, social links, spam protection (honeypot done; rate limit deferred to Phase 6)
+- [x] Static pages: Privacy Policy, Terms
+- [x] 404 and error pages
+- [x] Jobs auto-hide after deadline (query-level filter now; scheduled archive job in Phase 6)
 
 **Acceptance:** each page loads from the database, handles empty and error states, and is usable on a phone.
 
 ---
+
+Status: built and checked against a real Postgres + PostgREST running the project's migrations and seed.
+- Verified: all routes at 360/768/1280px (no overflow), axe 0 violations at 1280, event registration (incl. duplicate email), contact form (validation, honeypot), job search/filters, real 404s for unknown slugs, `.ics` download, production build.
+- Known gaps: About, Privacy and Terms text is draft (legal review in Phase 6); no real photos/logo yet (skyline placeholders); contact and registration emails untested against live Resend (needs API key); `/join` link 404s until Phase 4; public pages cache for 5 minutes; per-IP rate limiting on contact form not yet added.
 
 ## Phase 4: Membership
 Goal: sign-up through approval to member dashboard.
@@ -197,3 +202,5 @@ Goal: non-developers can run the site.
 - 2026-10-23: Plan written. No code yet.
 - 2026-10-23: Phase 1 (Foundation) built: Next.js project, Supabase migrations, seed, RLS with tests, auth (password, magic link, Google), route protection. Live Supabase round trip still to verify.
 - 2026-10-24: Phase 2 (Design system) built and checked in a browser at 360/768/1280px (focus, skip link, axe). `/design` shows every component in development.
+- 2026-10-24: Email provider decided: Resend.
+- 2026-10-24: Phase 3 (Public content) built: home, about, leadership, events + detail + calendar, jobs + detail, news + article, contact, privacy, terms, 404/error pages. Verified in browser against a local database.

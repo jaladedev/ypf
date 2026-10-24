@@ -65,7 +65,15 @@ export function EventCard({ event }: { event: EventSummary }) {
 }
 
 /** Event list row: date block, photo, title, meta and a Register button. */
-export function EventRow({ event, past }: { event: EventSummary; past?: boolean }) {
+export function EventRow({
+  event,
+  past,
+  as,
+}: {
+  event: EventSummary;
+  past?: boolean;
+  as?: "h2" | "h3";
+}) {
   return (
     <Card className="p-4">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -75,11 +83,11 @@ export function EventRow({ event, past }: { event: EventSummary; past?: boolean 
             <CoverImage src={event.cover_image} sizes="112px" />
           </div>
           <div className="min-w-0 flex-1 sm:hidden">
-            <EventRowText event={event} />
+            <EventRowText event={event} as={as} />
           </div>
         </div>
         <div className="hidden min-w-0 flex-1 sm:block">
-          <EventRowText event={event} />
+          <EventRowText event={event} as={as} />
         </div>
         {past ? (
           <Badge className="self-start sm:self-center">Past event</Badge>
@@ -97,17 +105,23 @@ export function EventRow({ event, past }: { event: EventSummary; past?: boolean 
   );
 }
 
-function EventRowText({ event }: { event: EventSummary }) {
+function EventRowText({
+  event,
+  as: Heading = "h3",
+}: {
+  event: EventSummary;
+  as?: "h2" | "h3";
+}) {
   return (
     <>
-      <h3 className="text-ink text-base font-semibold">
+      <Heading className="text-ink text-base font-semibold">
         <Link
           href={`/events/${event.slug}`}
           className="hover:text-brand-700 hover:underline"
         >
           {event.title}
         </Link>
-      </h3>
+      </Heading>
       <p className="text-ink-muted mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
         {(event.city ?? event.venue) ? (
           <span className="inline-flex items-center gap-1">

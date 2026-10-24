@@ -27,21 +27,28 @@ export function DeadlineLabel({ deadline }: { deadline: string | null }) {
 }
 
 /** One line in the jobs list. The whole row is a single link to the job. */
-export function JobRow({ job }: { job: JobSummary }) {
+export function JobRow({
+  job,
+  as: Heading = "h3",
+}: {
+  job: JobSummary;
+  /** Use "h2" on pages where the list sits directly under the page title. */
+  as?: "h2" | "h3";
+}) {
   return (
     <li className="border-line hover:bg-brand-50/50 relative flex items-center gap-4 border-b px-4 py-4 transition-colors last:border-b-0 sm:px-5">
       <span className="bg-brand-50 text-brand-700 grid size-11 shrink-0 place-items-center rounded-full">
         <Briefcase className="size-5" aria-hidden />
       </span>
       <div className="min-w-0 flex-1">
-        <h3 className="text-ink truncate text-base font-semibold">
+        <Heading className="text-ink truncate text-base font-semibold">
           <Link
             href={`/jobs/${job.slug}`}
             className="after:absolute after:inset-0 after:content-['']"
           >
             {job.title}
           </Link>
-        </h3>
+        </Heading>
         <p className="text-ink-muted mt-0.5 truncate text-sm">
           {job.organisation}
           {job.location ? ` · ${job.location}` : ""} · {jobTypeLabels[job.job_type]}
