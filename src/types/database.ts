@@ -151,6 +151,12 @@ export type ContactMessageRow = {
   created_at: string;
 };
 
+export type SavedJobRow = {
+  user_id: string;
+  job_id: string;
+  created_at: string;
+};
+
 /** Insert = required columns must be given, the rest are optional. */
 type TableDef<Row, Required extends keyof Row> = {
   Row: Row;
@@ -175,6 +181,7 @@ export type Database = {
       leaders: TableDef<LeaderRow, "name" | "role_title">;
       site_settings: TableDef<SiteSettingRow, "key" | "value">;
       contact_messages: TableDef<ContactMessageRow, "name" | "email" | "message">;
+      saved_jobs: TableDef<SavedJobRow, "user_id" | "job_id">;
     };
     Views: Record<string, never>;
     Functions: {

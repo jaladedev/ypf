@@ -180,7 +180,7 @@ export default async function EventPage({ params }: PageProps<"/events/[slug]">)
                       </p>
                     ) : null}
                     <RegisterForm
-                      eventId={event.id}
+                      slug={event.slug}
                       defaultName={session.profile?.full_name}
                       defaultEmail={session.user?.email}
                     />

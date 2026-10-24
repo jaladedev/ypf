@@ -60,7 +60,7 @@ The build plan and progress live in [`TODO.md`](./TODO.md).
 
 ### First admin
 
-New accounts start as `member` with status `pending`. Sign in once (so your profile exists), then
+New accounts start as `member` with status `pending`. Visitors apply at `/join`; admins approve or reject at `/admin/applications` (the first admin is created with the SQL below). Sign in once (so your profile exists), then
 run this in the Supabase SQL editor, using your own email:
 
 ```sql

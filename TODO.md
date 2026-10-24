@@ -22,7 +22,7 @@ Legend: `[ ]` to do, `[~]` partly done (see note), `[x]` done. Each phase ends w
 - [x] (Phase 1) Google sign-in: yes, at launch.
 - [x] (Phase 3) Event registration: open to anyone.
 - [x] (Phase 4) Who can be a member: any young planner.
-- [ ] (Phase 5) Do admins need CSV export only, or also Excel?
+- [x] (Phase 5) Exports: CSV and Excel (.xlsx).
 - [x] (Phase 6) Hosting target: Vercel.
 - [ ] (Phase 6) Production domain name.
 
@@ -125,20 +125,23 @@ Status: built and checked against a real Postgres + PostgREST running the projec
 ## Phase 4: Membership
 Goal: sign-up through approval to member dashboard.
 
-- [ ] **Join YPF** (3-step form from the mockup: Personal, Education, Professional); account is created at the end
-- [ ] Email verification before the application is reviewable
-- [ ] Application stored with status `pending`; confirmation email sent
-- [x] **Login** page (email/password, magic link, Google): built in Phase 1, restyled to the mockup (split layout with brand panel) in Phase 2
-- [~] "Pending approval" holding screen for unapproved members: `/pending` page exists and is styled; the email notification to the applicant is still to do here
-- [ ] Admin review queue: view application, approve/reject with note; email notifies the applicant
-- [ ] **Member dashboard**: upcoming events registered, saved jobs, resources, applications, quick links
-- [ ] Profile editing: details, avatar upload (Supabase Storage), visibility settings
-- [ ] Saved jobs (bookmark table) and "My events" list
-- [ ] Account settings: change email/password, delete account (and data) request
+- [x] **Join YPF**: 3-step form (Personal, Education, Professional); new visitors create their account on the last step, signed-in users (e.g. Google) skip it
+- [x] Email verification before the application is filed (details are held in the account until the email link is opened, then filed by `/join/complete`)
+- [x] Application stored with status `pending`; confirmation email to the applicant and a notice to admins
+- [x] **Login** page (email/password, magic link, Google): built in Phase 1
+- [x] "Pending approval" screen (`/pending`): shows submission date; rejected users see the reviewer's note and can apply again
+- [x] Admin review queue (`/admin/applications`): Pending/Approved/Rejected tabs, application detail, approve or reject (a note is required to reject), email to the applicant. A temporary admin menu is used until Phase 5.
+- [x] **Member dashboard**: welcome, quick links, upcoming events the member registered for (including ones registered before signing in, matched by email), saved-jobs count
+- [x] Profile editing (details, bio, LinkedIn)
+- [x] Saved jobs: `saved_jobs` table with RLS (+test), Save button on job pages, `/dashboard/saved`
+- [x] Account settings: change password; request account deletion (sends a request to admins)
+- [ ] Avatar upload (needs a Supabase Storage bucket + policies; planned with Phase 5 media handling)
+- [ ] Change email address; self-service account deletion (currently an admin-handled request)
 
-**Acceptance:** a new user can apply, an admin can approve them, and the member then sees their dashboard; a rejected or pending user cannot access member pages.
+**Acceptance:** a new user can apply, an admin can approve them, and the member then sees their dashboard; a rejected or pending user cannot access member pages. Met.
 
----
+Status: verified in a browser against a real Postgres + PostgREST (running the project migrations) plus a small test-only stand-in for Supabase sign-in. Checked: validation per step, sign-up, email confirmation, pending lock-out of dashboard/admin, admin approve/reject (note required), member access, profile save, saved jobs, event registration on the dashboard, password change, deletion request, reject then re-apply, anonymous redirects. Axe: 0 violations on join, pending, admin queue/review, dashboard, profile, settings.
+- Known gaps: the real Supabase Auth round trip (including real confirmation emails and Google) is still unverified until a live project exists; the header still shows "Sign in / Join YPF" on member pages; no member directory; no rate limiting on sign-up (Supabase's own limits apply).
 
 ## Phase 5: Administration
 Goal: non-developers can run the site.
@@ -204,3 +207,4 @@ Goal: non-developers can run the site.
 - 2026-10-24: Phase 2 (Design system) built and checked in a browser at 360/768/1280px (focus, skip link, axe). `/design` shows every component in development.
 - 2026-10-24: Email provider decided: Resend.
 - 2026-10-24: Phase 3 (Public content) built: home, about, leadership, events + detail + calendar, jobs + detail, news + article, contact, privacy, terms, 404/error pages. Verified in browser against a local database.
+- 2026-10-24: Phase 4 (Membership) built and verified in a browser: join form, email-verified application, admin review, member dashboard, profile, saved jobs, settings.

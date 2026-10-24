@@ -439,3 +439,29 @@ test("a suspended admin loses all privileges", async () => {
     `update public.profiles set membership_status='approved' where id='${ids.admin}'`,
   );
 });
+
+test("saved jobs are private to their owner", async () => {
+  const [{ id: jobId }] = await q(
+    `select id from public.jobs where status='published' limit 1`,
+  );
+  await asUser("member", async () => {
+    await db.query(`insert into public.saved_jobs (user_id, job_id) values ($1,$2)`, [
+      ids.member,
+      jobId,
+    ]);
+    assert.equal((await q(`select 1 from public.saved_jobs`)).length, 1);
+    await assert.rejects(
+      db.query(`insert into public.saved_jobs (user_id, job_id) values ($1,$2)`, [
+        ids.other,
+        jobId,
+      ]),
+    );
+  });
+  await asUser("other", async () => {
+    assert.equal((await q(`select 1 from public.saved_jobs`)).length, 0);
+  });
+  await asAnon(async () => {
+    // Supabase grants anon table access by default; RLS (no policy) hides every row.
+    assert.equal((await q(`select 1 from public.saved_jobs`).catch(() => [])).length, 0);
+  });
+});

@@ -8,6 +8,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody } from "@/components/ui/card";
 import { Markdown } from "@/components/ui/markdown";
 import { DeadlineLabel, JobRow } from "@/components/domain/job-row";
+import { SaveJobButton } from "@/components/domain/save-job-button";
 import { ShareButtons } from "@/components/domain/share-buttons";
 import { getJobBySlug, getRelatedJobs } from "@/lib/data/jobs";
 import { daysUntil, experienceLabels, jobTypeLabels } from "@/lib/format";
@@ -138,6 +139,7 @@ export default async function JobPage({ params }: PageProps<"/jobs/[slug]">) {
                     ) : null}
                   </ButtonLink>
                 ) : null}
+                <SaveJobButton slug={job.slug} />
               </CardBody>
             </Card>
           </aside>

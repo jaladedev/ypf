@@ -8,11 +8,11 @@ import { FormAlert } from "@/components/ui/form-alert";
 import { registerForEvent, type RegisterState } from "./actions";
 
 export function RegisterForm({
-  eventId,
+  slug,
   defaultName,
   defaultEmail,
 }: {
-  eventId: string;
+  slug: string;
   defaultName?: string;
   defaultEmail?: string;
 }) {
@@ -38,7 +38,7 @@ export function RegisterForm({
 
   return (
     <form action={action} className="space-y-4" noValidate>
-      <input type="hidden" name="event_id" value={eventId} />
+      <input type="hidden" name="slug" value={slug} />
       <Input
         label="Full name"
         name="name"

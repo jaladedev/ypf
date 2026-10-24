@@ -15,7 +15,7 @@ export async function registerForEvent(
   _prev: RegisterState,
   formData: FormData,
 ): Promise<RegisterState> {
-  const eventId = String(formData.get("event_id") ?? "");
+  const slug = String(formData.get("slug") ?? "");
   const parsed = eventRegistrationSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
@@ -24,11 +24,17 @@ export async function registerForEvent(
     const f = parsed.error.flatten().fieldErrors;
     return { fieldErrors: { name: f.name?.[0], email: f.email?.[0] } };
   }
-  if (!/^[0-9a-f-]{36}$/i.test(eventId))
-    return { error: "Something went wrong. Please try again." };
-
   // Cookie client: if the visitor is signed in the registration is linked to their account.
   const db = await createClient();
+  // Look the event up by slug on the live database: the event page is cached, so an id
+  // carried in the form could be stale.
+  const { data: found } = await db
+    .from("events")
+    .select("id")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (!found) return { error: "This event is no longer available." };
+  const eventId = found.id;
   const { error } = await db.rpc("register_for_event", {
     p_event_id: eventId,
     p_name: parsed.data.name,
