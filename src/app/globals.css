@@ -1,26 +1,146 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * YPF design tokens (Tailwind v4: tokens declared in @theme become utilities,
+ * e.g. bg-brand-800, text-display, rounded-card, shadow-card).
+ * Palette is taken from the mockups: deep forest green with a bright green accent.
+ */
+@theme {
+  /* Brand greens */
+  --color-brand-50: #f0f9f4;
+  --color-brand-100: #dcf1e5;
+  --color-brand-200: #bce3cd;
+  --color-brand-300: #8ecfaa;
+  --color-brand-400: #55b27f;
+  --color-brand-500: #2f9461;
+  --color-brand-600: #1f774d;
+  --color-brand-700: #195f3f;
+  --color-brand-800: #164c34;
+  --color-brand-900: #123e2c;
+  --color-brand-950: #0a2619;
+
+  /* Bright highlight used for the hero accent word and primary CTA on dark backgrounds */
+  --color-highlight: #4ade80;
+  --color-highlight-hover: #6ee79a;
+
+  /* Neutrals and surfaces */
+  --color-surface: #f6f8f7;
+  --color-ink: #14201a;
+  --color-ink-muted: #51605a;
+  --color-line: #dfe6e2;
+
+  /* Status */
+  --color-danger-50: #fdf0ef;
+  --color-danger-600: #c0392b;
+  --color-danger-700: #a5301f;
+  --color-warning-50: #fff6e5;
+  --color-warning-700: #9a5b00;
+  --color-info-50: #eaf3fb;
+  --color-info-700: #1b5e94;
+
+  /* Fonts (Geist is loaded in layout.tsx) */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* Type scale: size / line-height / tracking / weight */
+  --text-display: 3.25rem;
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.03em;
+  --text-display--font-weight: 700;
+  --text-h1: 2.25rem;
+  --text-h1--line-height: 1.15;
+  --text-h1--letter-spacing: -0.025em;
+  --text-h1--font-weight: 700;
+  --text-h2: 1.75rem;
+  --text-h2--line-height: 1.2;
+  --text-h2--letter-spacing: -0.02em;
+  --text-h2--font-weight: 650;
+  --text-h3: 1.25rem;
+  --text-h3--line-height: 1.3;
+  --text-h3--letter-spacing: -0.01em;
+  --text-h3--font-weight: 600;
+  --text-lead: 1.125rem;
+  --text-lead--line-height: 1.6;
+
+  /* Shape and depth */
+  --radius-card: 0.875rem;
+  --radius-control: 0.5rem;
+  --shadow-card: 0 1px 2px rgb(20 32 26 / 0.05), 0 4px 16px rgb(20 32 26 / 0.06);
+  --shadow-pop: 0 8px 30px rgb(20 32 26 / 0.14);
+
+  /* Layout */
+  --container-page: 72rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Larger headings from tablet up. */
+@media (min-width: 48rem) {
+  @theme {
+    --text-display: 4.25rem;
+    --text-h1: 2.75rem;
+    --text-h2: 2rem;
   }
 }
 
+/* Light theme only for v1 (see TODO.md, "Dark mode decision"). */
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #fff;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+}
+
+/* Visible keyboard focus everywhere. Mouse clicks don't trigger it. */
+:focus-visible {
+  outline: 2px solid var(--color-brand-600);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* On dark green surfaces the ring must be light to stay visible. */
+.on-dark :focus-visible {
+  outline-color: var(--color-highlight);
+}
+
+::selection {
+  background: var(--color-brand-200);
+  color: var(--color-brand-950);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
 }

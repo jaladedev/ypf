@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { AuthCard } from "@/components/auth/auth-card";
 import { LoginForm } from "@/components/auth/login-form";
+import { FormAlert } from "@/components/ui/form-alert";
 import { getSession } from "@/lib/auth/session";
 import { safeNext } from "@/lib/auth/redirect";
 
@@ -22,11 +23,7 @@ export default async function LoginPage(props: PageProps<"/login">) {
 
   return (
     <AuthCard title="Welcome back" description="Sign in to your YPF account.">
-      {errorKey && errors[errorKey] ? (
-        <p role="alert" className="rounded-md bg-red-50 p-3 text-sm text-red-800">
-          {errors[errorKey]}
-        </p>
-      ) : null}
+      <FormAlert error={errorKey ? errors[errorKey] : undefined} />
       <LoginForm next={next} />
     </AuthCard>
   );

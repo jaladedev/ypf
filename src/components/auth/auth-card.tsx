@@ -1,6 +1,11 @@
 import type { ReactNode } from "react";
+import { SkylineArt } from "@/components/layout/cover-image";
+import { Logo } from "@/components/layout/logo";
 
-/** Temporary centred card used by the auth pages until the Phase 2 design system lands. */
+/**
+ * Auth page layout: form card on the left, brand panel on large screens
+ * (like the Login mockup). Used by login, password reset and holding pages.
+ */
 export function AuthCard({
   title,
   description,
@@ -11,15 +16,32 @@ export function AuthCard({
   children: ReactNode;
 }) {
   return (
-    <main className="flex flex-1 items-center justify-center bg-gray-50 px-4 py-12">
-      <div className="w-full max-w-md space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
-        <div className="space-y-1.5">
-          <p className="text-sm font-semibold tracking-wide text-green-800">YPF</p>
-          <h1 className="text-2xl font-semibold text-gray-900">{title}</h1>
-          {description ? <p className="text-sm text-gray-600">{description}</p> : null}
+    <div className="grid min-h-dvh flex-1 lg:grid-cols-2">
+      <main
+        id="main"
+        className="flex flex-col justify-center bg-white px-4 py-10 sm:px-10"
+      >
+        <div className="mx-auto w-full max-w-md space-y-8">
+          <Logo />
+          <div className="space-y-2">
+            <h1 className="text-h1 text-ink">{title}</h1>
+            {description ? <p className="text-ink-muted">{description}</p> : null}
+          </div>
+          {children}
         </div>
-        {children}
-      </div>
-    </main>
+      </main>
+      <aside
+        aria-hidden
+        className="on-dark bg-brand-950 relative hidden overflow-hidden lg:flex lg:items-end"
+      >
+        <SkylineArt />
+        <div className="from-brand-950/90 via-brand-950/20 absolute inset-0 bg-linear-to-t to-transparent" />
+        <div className="relative p-12">
+          <p className="text-display text-white">
+            Together for <span className="text-highlight">better cities</span>
+          </p>
+        </div>
+      </aside>
+    </div>
   );
 }

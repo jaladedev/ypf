@@ -97,6 +97,7 @@ Postgres and checks what visitors, members, editors and admins can read and writ
 ```
 src/
   app/                  routes (App Router)
+    (site)/               public pages with header + footer (home; /design in dev)
     login/ forgot-password/ reset-password/ pending/   auth pages
     auth/callback  auth/signout                        auth route handlers
     dashboard/ admin/                                  protected areas (placeholders until Phases 4-5)
@@ -112,6 +113,24 @@ supabase/
   seed.sql              sample development data
   tests/                RLS tests (PGlite)
 ```
+
+## Design system
+
+Tokens (colours, type scale, radii, shadows) are declared once in `src/app/globals.css`.
+Run `npm run dev` and open **/design** to see every component (the page is a 404 in production).
+
+```
+src/components/
+  ui/        Button, Card, Badge, Tabs, Input/Textarea/Select/Checkbox, Stepper, Pagination,
+             EmptyState, Skeleton, Toast, Breadcrumbs, FormAlert
+  layout/    Container, Section, PageHero, Header, Footer, MobileNav, Logo, CoverImage
+  domain/    EventCard/EventRow, JobRow, NewsCard, LeaderCard, StatTile, ShareButtons, Avatar
+src/lib/     cn.ts (class names), format.ts (Nigerian-time dates, labels), forms.ts (zod forms)
+```
+
+Conventions: mobile-first; every interactive element shows a focus ring (never remove it);
+images go through `CoverImage` / `Avatar` so missing photos fall back gracefully;
+dates are always rendered in `Africa/Lagos` time via `src/lib/format.ts`.
 
 ## How access control works
 

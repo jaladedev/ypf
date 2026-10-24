@@ -8,29 +8,11 @@ import {
   signInWithPassword,
   type ActionState,
 } from "@/app/login/actions";
+import { Button } from "@/components/ui/button";
+import { FormAlert } from "@/components/ui/form-alert";
+import { Input } from "@/components/ui/form-controls";
 
 const initial: ActionState = {};
-
-const inputClass =
-  "w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-green-700 focus:outline-none focus:ring-2 focus:ring-green-700/30";
-const primaryButton =
-  "w-full rounded-md bg-green-800 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-900 disabled:opacity-60";
-
-function Feedback({ state }: { state: ActionState }) {
-  if (state.error)
-    return (
-      <p role="alert" className="text-sm text-red-700">
-        {state.error}
-      </p>
-    );
-  if (state.message)
-    return (
-      <p role="status" className="text-sm text-green-800">
-        {state.message}
-      </p>
-    );
-  return null;
-}
 
 export function LoginForm({ next }: { next: string }) {
   const [mode, setMode] = useState<"password" | "magic">("password");
@@ -47,92 +29,78 @@ export function LoginForm({ next }: { next: string }) {
     <div className="space-y-5">
       <form action={signInWithGoogle}>
         <input type="hidden" name="next" value={next} />
-        <button
+        <Button
           type="submit"
-          className="w-full rounded-md border border-gray-300 px-4 py-2.5 text-sm font-medium hover:bg-gray-50"
+          variant="secondary"
+          className="border-line text-ink hover:bg-surface w-full"
         >
           Continue with Google
-        </button>
+        </Button>
       </form>
 
-      <div className="flex items-center gap-3 text-xs text-gray-500">
-        <span className="h-px flex-1 bg-gray-200" />
+      <div className="text-ink-muted flex items-center gap-3 text-xs">
+        <span className="bg-line h-px flex-1" />
         or
-        <span className="h-px flex-1 bg-gray-200" />
+        <span className="bg-line h-px flex-1" />
       </div>
 
       {mode === "password" ? (
         <form action={passwordAction} className="space-y-4">
           <input type="hidden" name="next" value={next} />
+          <Input
+            label="Email address"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+          />
           <div className="space-y-1.5">
-            <label htmlFor="email" className="text-sm font-medium">
-              Email address
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              className={inputClass}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label htmlFor="password" className="text-sm font-medium">
-                Password
-              </label>
-              <Link
-                href="/forgot-password"
-                className="text-xs text-green-800 hover:underline"
-              >
-                Forgot password?
-              </Link>
-            </div>
-            <input
-              id="password"
+            <Input
+              label="Password"
               name="password"
               type="password"
               autoComplete="current-password"
               required
-              className={inputClass}
             />
+            <div className="text-right">
+              <Link
+                href="/forgot-password"
+                className="text-brand-700 text-xs font-medium hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
           </div>
-          <Feedback state={passwordState} />
-          <button type="submit" disabled={passwordPending} className={primaryButton}>
+          <FormAlert error={passwordState.error} message={passwordState.message} />
+          <Button type="submit" loading={passwordPending} className="w-full">
             {passwordPending ? "Signing in…" : "Sign in"}
-          </button>
+          </Button>
         </form>
       ) : (
         <form action={magicAction} className="space-y-4">
           <input type="hidden" name="next" value={next} />
-          <div className="space-y-1.5">
-            <label htmlFor="magic-email" className="text-sm font-medium">
-              Email address
-            </label>
-            <input
-              id="magic-email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              className={inputClass}
-            />
-          </div>
-          <Feedback state={magicState} />
-          <button type="submit" disabled={magicPending} className={primaryButton}>
+          <Input
+            label="Email address"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+          />
+          <FormAlert error={magicState.error} message={magicState.message} />
+          <Button type="submit" loading={magicPending} className="w-full">
             {magicPending ? "Sending…" : "Email me a sign-in link"}
-          </button>
+          </Button>
         </form>
       )}
 
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        className="w-full"
         onClick={() => setMode(mode === "password" ? "magic" : "password")}
-        className="w-full text-center text-sm text-green-800 hover:underline"
       >
         {mode === "password" ? "Use a magic link instead" : "Use a password instead"}
-      </button>
+      </Button>
     </div>
   );
 }

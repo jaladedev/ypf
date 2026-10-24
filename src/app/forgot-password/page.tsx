@@ -14,7 +14,7 @@ export default function ForgotPasswordPage() {
       <ForgotPasswordForm />
       <Link
         href="/login"
-        className="block text-center text-sm text-green-800 hover:underline"
+        className="text-brand-700 block text-center text-sm font-medium hover:underline"
       >
         Back to sign in
       </Link>

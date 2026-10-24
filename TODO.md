@@ -77,19 +77,22 @@ Goal: a running app wired to Supabase with auth, schema and RLS in place.
 ## Phase 2: Design system
 Goal: reusable building blocks matching the mockups (deep green, clean cards, mobile-first).
 
-- [ ] Design tokens in Tailwind config: green palette, neutral greys, accent, radii, shadows
-- [ ] Typography scale and font loading (`next/font`)
-- [ ] Layout: container, section wrapper, page hero (image + gradient overlay + title/subtitle)
-- [ ] Header: logo, nav, "Join YPF" CTA, search icon, mobile drawer
-- [ ] Footer: logo, link columns, privacy/terms, copyright
-- [ ] Components: Button (primary/secondary/ghost), Card, Badge, Tabs, Input, Textarea, Select, Checkbox, Stepper, Pagination, EmptyState, Skeleton, Toast, Breadcrumbs
-- [ ] Domain components: EventCard, EventRow (date block), JobRow, NewsCard, LeaderCard, StatTile, ShareButtons
-- [ ] Form system with validation (react-hook-form + zod) and consistent error display
-- [ ] Image handling: `next/image`, placeholders, remote patterns for Supabase Storage
-- [ ] Dark mode decision (default: light only for v1)
-- [ ] Storybook-style demo route `/design` (dev only) to review all components
+- [x] Design tokens in Tailwind config: green palette, neutral greys, accent, radii, shadows
+- [x] Typography scale and font loading (`next/font`)
+- [x] Layout: container, section wrapper, page hero (image + gradient overlay + title/subtitle)
+- [x] Header: logo, nav, "Sign in" link, "Join YPF" CTA, mobile menu (keyboard and Escape support). The search icon from the mockups is deferred: there is no search page in the plan yet; add it if/when one is
+- [x] Footer: logo, link columns, privacy/terms, copyright
+- [x] Components: Button (primary/secondary/ghost), Card, Badge, Tabs, Input, Textarea, Select, Checkbox, Stepper, Pagination, EmptyState, Skeleton, Toast, Breadcrumbs
+- [x] Domain components: EventCard, EventRow (date block), JobRow, NewsCard, LeaderCard, StatTile, ShareButtons
+- [x] Form system with validation (react-hook-form + zod) and consistent error display
+- [x] Image handling: `next/image` via `CoverImage` / `Avatar`, skyline and initials placeholders when no photo, remote pattern for Supabase Storage public bucket (derived from `NEXT_PUBLIC_SUPABASE_URL`)
+- [x] Dark mode decision: light only for v1 (`color-scheme: light`)
+- [x] Demo route `/design` to review all components: available in development, returns 404 in production
 
 **Acceptance:** every component renders correctly at 360px, 768px and 1280px; keyboard focus is visible on all interactive elements.
+**Status:** checked in a real browser (Chromium via Playwright): no horizontal overflow at 360/768/1280 on `/design`, home and login; all 70 keyboard tab stops on `/design` show a focus ring; skip link and mobile menu (open, `aria-expanded`, Escape) work; axe-core (WCAG 2.0/2.1 A and AA) reports 0 violations on the production build of home, login and forgot-password at all three widths (and on `/design` in dev apart from one logo-label finding, since fixed in the shared logo component).
+**Known gaps:** no real photography yet (mockup photos weren't supplied), so heroes and cards show the skyline placeholder; the logo is a simple placeholder mark; header/footer links to pages from later phases (About, Events, Join, ...) lead to 404 until those phases are built. Contrast was checked by axe on the pages above only; re-check when real photos sit under hero text.
+
 
 ---
 
@@ -120,8 +123,8 @@ Goal: sign-up through approval to member dashboard.
 - [ ] **Join YPF** (3-step form from the mockup: Personal, Education, Professional); account is created at the end
 - [ ] Email verification before the application is reviewable
 - [ ] Application stored with status `pending`; confirmation email sent
-- [~] **Login** page (email/password, magic link, Google): functional since Phase 1 at `/login`; restyle to the mockup in Phase 2
-- [~] "Pending approval" holding screen for unapproved members: basic `/pending` page exists since Phase 1; restyle and add the email notification here
+- [x] **Login** page (email/password, magic link, Google): built in Phase 1, restyled to the mockup (split layout with brand panel) in Phase 2
+- [~] "Pending approval" holding screen for unapproved members: `/pending` page exists and is styled; the email notification to the applicant is still to do here
 - [ ] Admin review queue: view application, approve/reject with note; email notifies the applicant
 - [ ] **Member dashboard**: upcoming events registered, saved jobs, resources, applications, quick links
 - [ ] Profile editing: details, avatar upload (Supabase Storage), visibility settings
@@ -186,6 +189,11 @@ Goal: non-developers can run the site.
 - Admin bootstrap: the first admin is created with one SQL statement (README, "First admin").
 - Not in Phase 1 (planned later): storage buckets (Phase 4/5), audit log table (Phase 5), saved-jobs table (Phase 4), rate limiting (Phase 6).
 
+- Phase 2: tokens live in `src/app/globals.css` (`@theme`), so utilities like `bg-brand-800`, `text-h2`, `rounded-card`, `shadow-card` come from there. `Header` is intentionally static (no session lookup) so public pages stay cacheable; signed-in state belongs on member pages.
+- Phase 2: form controls (`Input`, `Textarea`, `Select`, `Checkbox`) carry their own label, hint and error wiring; use `useZodForm` + `errorMessage` from `src/lib/forms.ts` for client forms and the same zod schema in server actions.
+- Phase 2: sharing uses plain labelled links (WhatsApp first) instead of brand icons, to avoid shipping unofficial logo artwork.
+
 ## Progress log
 - 2026-10-23: Plan written. No code yet.
 - 2026-10-23: Phase 1 (Foundation) built: Next.js project, Supabase migrations, seed, RLS with tests, auth (password, magic link, Google), route protection. Live Supabase round trip still to verify.
+- 2026-10-24: Phase 2 (Design system) built and checked in a browser at 360/768/1280px (focus, skip link, axe). `/design` shows every component in development.

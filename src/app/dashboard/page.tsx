@@ -15,9 +15,9 @@ export default async function DashboardPage() {
       <h1 className="text-2xl font-semibold">
         Welcome back, {profile?.full_name || user.email}
       </h1>
-      <p className="text-gray-600">Member dashboard coming in Phase 4.</p>
+      <p className="text-ink-muted">Member dashboard coming in Phase 4.</p>
       {role === "editor" || role === "admin" ? (
-        <Link href="/admin" className="text-green-800 underline">
+        <Link href="/admin" className="text-brand-700 underline">
           Go to admin
         </Link>
       ) : null}

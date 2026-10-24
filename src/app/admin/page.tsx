@@ -15,7 +15,7 @@ export default async function AdminPage() {
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 space-y-4 px-4 py-12">
       <h1 className="text-2xl font-semibold">Admin</h1>
-      <p className="text-gray-600">
+      <p className="text-ink-muted">
         Signed in as <strong>{role}</strong>. Dashboard coming in Phase 5.
       </p>
       <SignOutButton />
