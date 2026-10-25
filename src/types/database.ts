@@ -157,6 +157,32 @@ export type SavedJobRow = {
   created_at: string;
 };
 
+export type AuditLogRow = {
+  id: number;
+  actor_id: string | null;
+  action: string;
+  entity: string;
+  entity_id: string | null;
+  summary: string;
+  detail: Json;
+  created_at: string;
+};
+
+export type AdminMemberRow = {
+  id: string;
+  email: string | null;
+  full_name: string;
+  phone: string | null;
+  institution: string | null;
+  career_stage: CareerStage | null;
+  specialisation: string | null;
+  avatar_url: string | null;
+  role: AppRole;
+  membership_status: MembershipStatus;
+  created_at: string;
+  total_count: number;
+};
+
 /** Insert = required columns must be given, the rest are optional. */
 type TableDef<Row, Required extends keyof Row> = {
   Row: Row;
@@ -182,12 +208,28 @@ export type Database = {
       site_settings: TableDef<SiteSettingRow, "key" | "value">;
       contact_messages: TableDef<ContactMessageRow, "name" | "email" | "message">;
       saved_jobs: TableDef<SavedJobRow, "user_id" | "job_id">;
+      audit_log: TableDef<AuditLogRow, "action" | "entity" | "summary">;
     };
     Views: Record<string, never>;
     Functions: {
       register_for_event: {
         Args: { p_event_id: string; p_name: string; p_email: string };
         Returns: RegistrationStatus;
+      };
+      admin_list_members: {
+        Args: {
+          p_search?: string | null;
+          p_status?: MembershipStatus | null;
+          p_role?: AppRole | null;
+          p_id?: string | null;
+          p_limit?: number;
+          p_offset?: number;
+        };
+        Returns: AdminMemberRow[];
+      };
+      log_admin_action: {
+        Args: { p_action: string; p_summary: string };
+        Returns: undefined;
       };
       user_role: { Args: Record<string, never>; Returns: AppRole | null };
       is_admin: { Args: Record<string, never>; Returns: boolean };

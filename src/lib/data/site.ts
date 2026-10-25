@@ -14,6 +14,7 @@ export type ContactInfo = {
   address: string;
   hours: string;
 };
+export type Partner = { name: string; logo_url?: string };
 export type SocialLinks = Partial<
   Record<"linkedin" | "twitter" | "instagram" | "facebook", string>
 >;
@@ -27,6 +28,12 @@ const defaults = {
   } satisfies SiteStats,
   contact: { email: "", phone: "", address: "", hours: "" } satisfies ContactInfo,
   social: {} satisfies SocialLinks,
+  partners: [
+    { name: "Nigerian Institute of Town Planners" },
+    { name: "Town Planners Registration Council of Nigeria" },
+    { name: "Commonwealth Association of Planners" },
+    { name: "UN-Habitat" },
+  ] as Partner[],
 };
 
 /** Reads site_settings; missing keys fall back to defaults so pages never break. */
@@ -41,7 +48,12 @@ export async function getSiteSettings() {
       ? { ...fallback, ...(v as object) }
       : fallback;
   };
+  const rawPartners = (map.get("partners") as { items?: unknown } | undefined)?.items;
+  const partners = Array.isArray(rawPartners)
+    ? (rawPartners as Partner[]).filter((p) => p && typeof p.name === "string" && p.name)
+    : defaults.partners;
   return {
+    partners,
     stats: pick<SiteStats>("stats", defaults.stats),
     contact: pick<ContactInfo>("contact", defaults.contact),
     social: pick<SocialLinks>("social", defaults.social),

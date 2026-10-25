@@ -68,7 +68,7 @@ Goal: a running app wired to Supabase with auth, schema and RLS in place.
 - [x] Editors: write events, jobs, posts, leaders
 - [x] Admins: everything above plus member approvals, role changes, contact messages
 - [x] Contact form insert allowed for anon, read restricted to admins
-- [x] SQL tests proving each rule: `npm run test:db` (19 tests, in-process Postgres via PGlite, runs the real migrations and seed)
+- [x] SQL tests proving each rule: `npm run test:db` (28 tests as of Phase 5, in-process Postgres via PGlite, runs the real migrations and seed)
 
 **Acceptance:** `npm run dev` works; a test user can sign up and sign in; RLS tests pass; an anonymous request cannot read drafts or other users' data.
 **Status:** build, typecheck, lint and all 19 RLS tests pass; route protection smoke-tested against a production build. NOT yet verified: a real sign-up/sign-in/Google round trip, because that needs a running Supabase project (no Docker or Supabase account in the build sandbox). Do this first when you connect a project (README, "First run").
@@ -135,7 +135,7 @@ Goal: sign-up through approval to member dashboard.
 - [x] Profile editing (details, bio, LinkedIn)
 - [x] Saved jobs: `saved_jobs` table with RLS (+test), Save button on job pages, `/dashboard/saved`
 - [x] Account settings: change password; request account deletion (sends a request to admins)
-- [ ] Avatar upload (needs a Supabase Storage bucket + policies; planned with Phase 5 media handling)
+- [x] Avatar upload (done in Phase 5: `avatars` bucket + policies, form on the profile page)
 - [ ] Change email address; self-service account deletion (currently an admin-handled request)
 
 **Acceptance:** a new user can apply, an admin can approve them, and the member then sees their dashboard; a rejected or pending user cannot access member pages. Met.
@@ -146,20 +146,26 @@ Status: verified in a browser against a real Postgres + PostgREST (running the p
 ## Phase 5: Administration
 Goal: non-developers can run the site.
 
-- [ ] Role-based admin shell with sidebar (Dashboard, Members, Events, Jobs, News, Leadership, Pages & Media, Messages, Settings)
-- [ ] **Dashboard**: totals (members, events, jobs, posts), membership growth chart, recent activity
-- [ ] **Members**: search, filter by status, approve/suspend, role assignment (admin only)
-- [ ] **Events**: create/edit/publish/archive, speakers, cover image, view and export registrations
-- [ ] **Jobs**: create/edit/publish/archive, duplicate a listing
-- [ ] **News**: markdown editor with image upload, draft/publish, categories
-- [ ] **Leadership**: add/reorder leaders with photos
-- [ ] **Messages**: inbox for contact submissions, mark read/replied
-- [ ] **Site settings**: stats, contact details, social links, partner logos
-- [ ] **Exports**: members, event registrations, contact messages as CSV
-- [ ] Audit log for sensitive actions (role changes, approvals, deletions)
-- [ ] Form UX: autosave drafts, confirm dialogs for destructive actions
+- [x] Role-based admin shell with sidebar (Dashboard, Members, Events, Jobs, News, Leadership, Pages & Media, Messages, Settings, plus Audit log). Editors see only content sections; admins see everything. Mobile menu, skip link, waiting-count badges
+- [x] **Dashboard**: totals (members, events, jobs, posts), membership growth chart (new approved members per month, last 12), recent activity (registrations, applications, messages, audit entries)
+- [x] **Members** (admin): search by name/email, filter by status and role, detail page, approve/suspend/reinstate, role assignment. Admins can't change their own role/status. Application review stays at `/admin/applications`
+- [x] **Events**: create/edit/publish/unpublish/archive/delete, speakers with photos, cover image, registrations list (remove entry) and export
+- [x] **Jobs**: create/edit/publish/unpublish/archive/delete, duplicate a listing (copy is a draft with no deadline)
+- [x] **News**: Markdown editor (toolbar, image upload, live preview), draft/publish, optional publish date (future date = scheduled), categories
+- [x] **Leadership**: add/edit/hide/delete leaders with photos, reorder with up/down buttons (no drag and drop)
+- [x] **Messages** (admin): inbox with New/Read/Replied tabs, detail, reply by email link, delete
+- [x] **Site settings** (admin): home figures, contact details, social links, partners with optional logos (home page now reads partners from settings)
+- [x] **Pages & Media**: image library (upload many, copy link, delete). About/Privacy/Terms wording is still in code (noted on the page)
+- [x] **Exports**: members (honours the current filters), event registrations, contact messages, each as CSV and Excel (.xlsx). Cells starting with `= + - @` are neutralised against spreadsheet formula injection
+- [x] Audit log: database triggers record role/status changes, deletions and settings edits; exports are logged through `log_admin_action()`. Admin-only viewer at `/admin/audit`, append-only
+- [x] Form UX: confirm dialogs for unpublish/archive/delete/suspend; failed saves keep what was typed; local autosave of text fields with a "restore" banner (stored in the browser only, not on the server)
+- [x] Avatar upload on `/dashboard/profile` (closes the Phase 4 item); Supabase Storage buckets `avatars` (own folder only) and `media` (editors/admins) with policies in migration 8
 
-**Acceptance:** an editor can publish an event, job and article without touching code; an editor cannot change roles or approve members; exports match the data.
+**Acceptance:** an editor can publish an event, job and article without touching code; an editor cannot change roles or approve members; exports match the data. Met.
+
+Status: built; lint, typecheck and production build pass. `npm run test:db`: 28 tests (8 new: audit log, audited changes, `log_admin_action`, `admin_list_members`, storage policies). Browser pass against real Postgres + PostgREST: 85 checks (all three roles, publish/unpublish with immediate public refresh, uploads, exports parsed back from CSV and xlsx, audit trail, axe 0 violations on dashboard, event/news/member/audit/settings/media/profile pages, no horizontal overflow at 360px on 10 admin pages, mobile menu).
+- Decision: site settings stay **admin-only** (the existing RLS rule and test); editors manage events, jobs, news, leaders and media.
+- Known gaps: uploads were exercised against a small stand-in for Supabase Storage that runs the project's real storage policies, not a hosted project; no image resizing (5 MB / 2 MB limits); the Supabase "storage.objects" policies and bucket rows need a first look in the dashboard after the migration runs; no drag-and-drop ordering; no editor-requested "scheduled unpublish"; autosave is per browser; change-email and self-service account deletion (Phase 4 leftovers) are still open; member directory not built.
 
 ---
 
@@ -195,7 +201,7 @@ Goal: non-developers can run the site.
 - Fonts: Geist is self-hosted via the `geist` package (no Google Fonts request at build or runtime). Revisit in Phase 2 when the final typography is chosen.
 - Public event registration goes through the `register_for_event()` database function; there is deliberately no INSERT policy on `event_registrations` for visitors.
 - Admin bootstrap: the first admin is created with one SQL statement (README, "First admin").
-- Not in Phase 1 (planned later): storage buckets (Phase 4/5), audit log table (Phase 5), saved-jobs table (Phase 4), rate limiting (Phase 6).
+- Not in Phase 1 (planned later): storage buckets and audit log (added in Phase 5, migration 8), saved-jobs table (Phase 4), rate limiting (Phase 6).
 
 - Phase 2: tokens live in `src/app/globals.css` (`@theme`), so utilities like `bg-brand-800`, `text-h2`, `rounded-card`, `shadow-card` come from there. `Header` is intentionally static (no session lookup) so public pages stay cacheable; signed-in state belongs on member pages.
 - Phase 2: form controls (`Input`, `Textarea`, `Select`, `Checkbox`) carry their own label, hint and error wiring; use `useZodForm` + `errorMessage` from `src/lib/forms.ts` for client forms and the same zod schema in server actions.
@@ -208,3 +214,4 @@ Goal: non-developers can run the site.
 - 2026-10-24: Email provider decided: Resend.
 - 2026-10-24: Phase 3 (Public content) built: home, about, leadership, events + detail + calendar, jobs + detail, news + article, contact, privacy, terms, 404/error pages. Verified in browser against a local database.
 - 2026-10-24: Phase 4 (Membership) built and verified in a browser: join form, email-verified application, admin review, member dashboard, profile, saved jobs, settings.
+- 2026-10-25: Phase 5 (Administration) built and verified in a browser: admin shell, dashboard, members, events, jobs, news, leadership, messages, settings, media, audit log, CSV + Excel exports, avatar upload. Migration 8 adds the audit log, `admin_list_members()` and the storage buckets.

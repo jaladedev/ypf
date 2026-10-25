@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Metadata } from "next";
 import { Globe2, GraduationCap, Users } from "lucide-react";
 import { PageHero } from "@/components/layout/page-hero";
@@ -21,12 +22,6 @@ export const metadata: Metadata = {
   description: siteConfig.description,
 };
 
-const partners = [
-  "Nigerian Institute of Town Planners",
-  "Town Planners Registration Council of Nigeria",
-  "Commonwealth Association of Planners",
-  "UN-Habitat",
-];
 
 export default async function Home() {
   const [settings, events, posts, jobs] = await Promise.all([
@@ -35,7 +30,7 @@ export default async function Home() {
     getLatestPosts(3),
     getLatestJobs(4),
   ]);
-  const { stats } = settings;
+  const { stats, partners } = settings;
 
   return (
     <>
@@ -175,8 +170,9 @@ export default async function Home() {
         </h2>
         <ul className="mt-5 flex flex-wrap justify-center gap-x-8 gap-y-3">
           {partners.map((p) => (
-            <li key={p} className="text-ink text-sm font-medium">
-              {p}
+            <li key={p.name} className="text-ink flex items-center gap-2 text-sm font-medium">
+              {p.logo_url ? <Image src={p.logo_url} alt="" width={28} height={28} className="size-7 object-contain" /> : null}
+              {p.name}
             </li>
           ))}
         </ul>

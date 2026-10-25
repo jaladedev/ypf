@@ -465,3 +465,179 @@ test("saved jobs are private to their owner", async () => {
     assert.equal((await q(`select 1 from public.saved_jobs`).catch(() => [])).length, 0);
   });
 });
+
+// ------------------------------------------------------------ Phase 5: admin
+test("audit log: only admins read it, nobody writes it directly", async () => {
+  await asUser("admin", async () => {
+    assert.ok((await q(`select 1 from public.audit_log`)).length >= 1);
+    await assert.rejects(
+      db.query(`insert into public.audit_log (action, entity, summary) values ('x','y','z')`),
+      /permission denied/,
+    );
+    await assert.rejects(db.query(`delete from public.audit_log`), /permission denied/);
+    await assert.rejects(db.query(`update public.audit_log set summary='x'`), /permission denied/);
+  });
+  for (const who of ["editor", "member"]) {
+    await asUser(who, async () => {
+      assert.equal((await q(`select 1 from public.audit_log`)).length, 0, who);
+    });
+  }
+  await asAnon(async () => {
+    await assert.rejects(db.query(`select 1 from public.audit_log`), /permission denied/);
+  });
+});
+
+test("role and status changes are audited with the acting admin", async () => {
+  await asUser("admin", async () => {
+    await db.query(`update public.profiles set role='editor' where id=$1`, [ids.member]);
+    await db.query(`update public.profiles set membership_status='suspended' where id=$1`, [
+      ids.member,
+    ]);
+    const rows = await q(
+      `select action, actor_id, summary from public.audit_log
+       where entity_id=$1 and actor_id=$2 order by id`,
+      [ids.member, ids.admin],
+    );
+    assert.deepEqual(
+      rows.map((r) => r.action),
+      ["member.role_changed", "member.status_changed"],
+    );
+    assert.match(rows[0].summary, /member to editor/);
+    // put things back for later tests
+    await db.query(
+      `update public.profiles set role='member', membership_status='approved' where id=$1`,
+      [ids.member],
+    );
+  });
+});
+
+test("deleting content is audited, even when an editor does it", async () => {
+  await asUser("editor", async () => {
+    await db.query(`insert into public.posts (title, slug) values ('Doomed post','doomed-post')`);
+    await db.query(`delete from public.posts where slug='doomed-post'`);
+  });
+  await asUser("admin", async () => {
+    const [row] = await q(
+      `select actor_id, summary from public.audit_log where action='post.deleted' order by id desc limit 1`,
+    );
+    assert.equal(row.actor_id, ids.editor);
+    assert.match(row.summary, /Doomed post/);
+  });
+});
+
+test("settings changes are audited", async () => {
+  await asUser("admin", async () => {
+    await db.query(
+      `insert into public.site_settings (key, value) values ('partners','{"items":[]}')
+       on conflict (key) do update set value = excluded.value`,
+    );
+    assert.ok(
+      (await q(`select 1 from public.audit_log where action='settings.updated' and entity_id='partners'`))
+        .length >= 1,
+    );
+  });
+});
+
+test("log_admin_action: editors may log exports; nobody else; no made-up actions", async () => {
+  await asUser("editor", async () => {
+    await db.query(`select public.log_admin_action('export.registrations','Exported 3 rows')`);
+    await assert.rejects(
+      db.query(`select public.log_admin_action('member.role_changed','forged')`),
+      /Unknown audit action/,
+    );
+  });
+  await asUser("member", async () => {
+    await assert.rejects(
+      db.query(`select public.log_admin_action('export.members','nope')`),
+      /Editors only/,
+    );
+  });
+  await asAnon(async () => {
+    await assert.rejects(
+      db.query(`select public.log_admin_action('export.members','nope')`),
+      /permission denied/,
+    );
+  });
+  await asUser("admin", async () => {
+    const [row] = await q(
+      `select actor_id from public.audit_log where action='export.registrations' limit 1`,
+    );
+    assert.equal(row.actor_id, ids.editor);
+  });
+});
+
+test("admin_list_members: admins only; joins email; search is literal", async () => {
+  await asUser("admin", async () => {
+    const all = await q(`select * from public.admin_list_members()`);
+    assert.ok(all.length >= 6);
+    assert.ok(all.every((r) => r.email && Number(r.total_count) === all.length));
+    const one = await q(`select * from public.admin_list_members(p_search => 'editor@test')`);
+    assert.ok(one.some((r) => r.id === ids.editor));
+    assert.ok(!one.some((r) => r.id === ids.admin));
+    const pend = await q(
+      `select * from public.admin_list_members(p_status => 'pending')`,
+    );
+    assert.ok(pend.every((r) => r.membership_status === "pending"));
+    // wildcards are escaped, so "%" matches nothing rather than everything
+    assert.equal((await q(`select * from public.admin_list_members(p_search => '%')`)).length, 0);
+    assert.equal((await q(`select * from public.admin_list_members(p_search => '_')`)).length, 0);
+    const page = await q(`select * from public.admin_list_members(p_limit => 2, p_offset => 1)`);
+    assert.equal(page.length, 2);
+    assert.equal(Number(page[0].total_count), all.length);
+  });
+  for (const who of ["editor", "member", "pendingEditor"]) {
+    await asUser(who, async () => {
+      await assert.rejects(db.query(`select * from public.admin_list_members()`), /Admins only/);
+    });
+  }
+  await asAnon(async () => {
+    await assert.rejects(db.query(`select * from public.admin_list_members()`), /permission denied/);
+  });
+});
+
+test("storage: members write only their own avatar folder", async () => {
+  const put = (bucket, name) =>
+    db.query(`insert into storage.objects (bucket_id, name) values ($1, $2)`, [bucket, name]);
+  await asUser("member", async () => {
+    await put("avatars", `${ids.member}/me.png`);
+    await assert.rejects(put("avatars", `${ids.other}/me.png`), /row-level security/);
+    await assert.rejects(put("avatars", `loose.png`), /row-level security/);
+    await assert.rejects(put("media", `uploads/x.png`), /row-level security/);
+    // cannot see or delete someone else's file
+    assert.equal(
+      (await q(`select 1 from storage.objects where name like $1`, [`${ids.other}/%`])).length,
+      0,
+    );
+  });
+  await asUser("other", async () => {
+    await put("avatars", `${ids.other}/me.png`);
+    const del = await db.query(`delete from storage.objects where name=$1 returning id`, [
+      `${ids.member}/me.png`,
+    ]);
+    assert.equal(del.rows.length, 0);
+  });
+  await asUser("pendingEditor", async () => {
+    // never approved: no uploads, whatever role they hold
+    await assert.rejects(put("avatars", `${ids.pendingEditor}/me.png`), /row-level security/);
+  });
+  await asAnon(async () => {
+    await assert.rejects(put("avatars", `${ids.member}/x.png`), /row-level security|permission denied/);
+  });
+});
+
+test("storage: only editors and admins write to the media bucket", async () => {
+  const put = (name) =>
+    db.query(`insert into storage.objects (bucket_id, name) values ('media', $1)`, [name]);
+  await asUser("editor", async () => {
+    await put("uploads/editor.png");
+  });
+  await asUser("admin", async () => {
+    await put("uploads/admin.png");
+  });
+  await asUser("pendingEditor", async () => {
+    await assert.rejects(put("uploads/pending.png"), /row-level security/);
+  });
+  const [bucket] = await q(`select public, file_size_limit, allowed_mime_types from storage.buckets where id='media'`);
+  assert.equal(bucket.public, true);
+  assert.ok(!bucket.allowed_mime_types.includes("image/svg+xml"));
+});
