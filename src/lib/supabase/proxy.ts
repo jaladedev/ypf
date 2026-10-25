@@ -18,6 +18,21 @@ function isProtected(pathname: string) {
  * and by Row Level Security in the database.
  */
 export async function updateSession(request: NextRequest) {
+  const { pathname: path } = request.nextUrl;
+
+  // Safety net: if an OAuth/email link lands on the home page with a one-time
+  // code (e.g. a redirect URL missing from Supabase's allow-list), finish sign-in.
+  if (path === "/" && request.nextUrl.searchParams.has("code")) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/callback";
+    return NextResponse.redirect(url);
+  }
+
+  // Public pages for visitors with no auth cookie need no session work at all,
+  // so they skip the round trip to Supabase and stay fast and cacheable.
+  const hasAuthCookie = request.cookies.getAll().some((c) => c.name.startsWith("sb-"));
+  if (!hasAuthCookie && !isProtected(path)) return NextResponse.next({ request });
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient<Database>(
