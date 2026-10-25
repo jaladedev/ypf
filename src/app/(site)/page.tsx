@@ -49,7 +49,7 @@ export default async function Home() {
               Join YPF
             </ButtonLink>
             <ButtonLink href="/about" variant="outline-light" size="lg">
-              Learn more
+              About YPF
             </ButtonLink>
           </>
         }

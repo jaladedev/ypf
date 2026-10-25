@@ -5,6 +5,15 @@ import { ToastProvider } from "@/components/ui/toast";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  applicationName: "Young Planners Forum",
+  openGraph: {
+    type: "website",
+    siteName: "Young Planners Forum",
+    locale: "en_NG",
+  },
+  twitter: { card: "summary_large_image" },
+  alternates: { canonical: "./" },
   title: {
     default: "Young Planners Forum | NITP",
     template: "%s",

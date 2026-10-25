@@ -1,3 +1,5 @@
+import { JsonLd } from "@/components/seo/json-ld";
+import { siteUrl } from "@/lib/seo";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Briefcase, Building2, Check, MapPin, Clock } from "lucide-react";
@@ -42,6 +44,21 @@ export default async function JobPage({ params }: PageProps<"/jobs/[slug]">) {
 
   return (
     <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "JobPosting",
+          title: job.title,
+          description: job.description,
+          datePosted: job.created_at,
+          validThrough: job.deadline ?? undefined,
+          employmentType: { full_time: "FULL_TIME", part_time: "PART_TIME", internship: "INTERN", nysc: "INTERN", volunteer: "VOLUNTEER", contract: "CONTRACTOR" }[job.job_type],
+          hiringOrganization: { "@type": "Organization", name: job.organisation },
+          jobLocation: { "@type": "Place", address: { "@type": "PostalAddress", addressLocality: job.location ?? "Nigeria", addressCountry: "NG" } },
+          directApply: false,
+          url: `${siteUrl()}/jobs/${job.slug}`,
+        }}
+      />
       <PageHero
         title={job.title}
         subtitle={job.organisation}

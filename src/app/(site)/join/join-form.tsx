@@ -32,6 +32,8 @@ export function JoinForm({
   signedIn: boolean;
   defaultName?: string;
 }) {
+  const [consent, setConsent] = useState(false);
+  const [consentError, setConsentError] = useState<string>();
   const [step, setStep] = useState(0);
   const [account, setAccount] = useState<Account>({
     email: "",
@@ -83,6 +85,11 @@ export function JoinForm({
   }
 
   const onSubmit = handleSubmit((values) => {
+    if (!consent) {
+      setConsentError("Please confirm you consent to us using your details.");
+      return;
+    }
+    setConsentError(undefined);
     setResult({});
     startTransition(async () => {
       const r = await submitApplication(values, signedIn ? undefined : account);
@@ -288,6 +295,26 @@ export function JoinForm({
             )}
           </div>
 
+          {last ? (
+            <Checkbox
+              checked={consent}
+              onChange={(e) => {
+                setConsent(e.target.checked);
+                if (e.target.checked) setConsentError(undefined);
+              }}
+              error={consentError}
+              label={
+                <>
+                  I consent to the Young Planners Forum collecting and using the details above
+                  to review my application and run my membership, as described in the{" "}
+                  <Link href="/privacy" className="text-brand-700 underline" target="_blank">
+                    Privacy Policy<span className="sr-only"> (opens in a new tab)</span>
+                  </Link>
+                  . I can withdraw this at any time by contacting YPF.
+                </>
+              }
+            />
+          ) : null}
           <FormAlert error={result.error} />
           <div className="flex items-center justify-between gap-3 pt-2">
             {step > 0 ? (

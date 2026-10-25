@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { safeNext } from "@/lib/auth/redirect";
+import { rateLimit, TOO_MANY } from "@/lib/rate-limit";
 
 export type ActionState = { error?: string; message?: string };
 
@@ -30,6 +31,7 @@ export async function signInWithPassword(
   if (!email.success) return { error: email.error.issues[0].message };
   if (!password) return { error: "Enter your password." };
 
+  if (!(await rateLimit("login", 20, 900))) return { error: TOO_MANY };
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({
     email: email.data,
@@ -54,6 +56,7 @@ export async function signInWithMagicLink(
   const email = emailSchema.safeParse(formData.get("email"));
   if (!email.success) return { error: email.error.issues[0].message };
 
+  if (!(await rateLimit("email-link", 8, 3600))) return { error: TOO_MANY };
   const next = safeNext(String(formData.get("next") ?? ""));
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithOtp({
@@ -84,6 +87,7 @@ export async function requestPasswordReset(
   const email = emailSchema.safeParse(formData.get("email"));
   if (!email.success) return { error: email.error.issues[0].message };
 
+  if (!(await rateLimit("email-link", 8, 3600))) return { error: TOO_MANY };
   const supabase = await createClient();
   await supabase.auth.resetPasswordForEmail(email.data, {
     redirectTo: callbackUrl(await siteOrigin(), "/reset-password"),

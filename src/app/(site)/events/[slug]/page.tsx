@@ -1,3 +1,5 @@
+import { JsonLd } from "@/components/seo/json-ld";
+import { siteUrl } from "@/lib/seo";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CalendarDays, CalendarPlus, Check, Clock, MapPin, Users } from "lucide-react";
@@ -58,6 +60,26 @@ export default async function EventPage({ params }: PageProps<"/events/[slug]">)
 
   return (
     <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Event",
+          name: event.title,
+          description: event.summary ?? undefined,
+          startDate: event.starts_at,
+          endDate: event.ends_at ?? undefined,
+          eventStatus: "https://schema.org/EventScheduled",
+          eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+          image: event.cover_image ?? undefined,
+          location: {
+            "@type": "Place",
+            name: event.venue ?? event.city ?? "To be announced",
+            address: { "@type": "PostalAddress", addressLocality: event.city ?? undefined, addressCountry: "NG" },
+          },
+          organizer: { "@type": "Organization", name: "Young Planners Forum, Nigerian Institute of Town Planners", url: siteUrl() },
+          url: `${siteUrl()}/events/${event.slug}`,
+        }}
+      />
       <PageHero
         image={event.cover_image}
         title={event.title}

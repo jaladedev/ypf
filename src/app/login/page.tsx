@@ -6,7 +6,10 @@ import { FormAlert } from "@/components/ui/form-alert";
 import { getSession } from "@/lib/auth/session";
 import { safeNext } from "@/lib/auth/redirect";
 
-export const metadata: Metadata = { title: "Sign in | Young Planners Forum" };
+export const metadata: Metadata = {
+  title: "Sign in | Young Planners Forum",
+  robots: { index: false },
+};
 
 const errors: Record<string, string> = {
   link: "That sign-in link is invalid or has expired. Please try again.",
@@ -24,6 +27,9 @@ export default async function LoginPage(props: PageProps<"/login">) {
   return (
     <AuthCard title="Welcome back" description="Sign in to your YPF account.">
       <FormAlert error={errorKey ? errors[errorKey] : undefined} />
+      {!errorKey && typeof params.next === "string" ? (
+        <FormAlert message="Please sign in to continue. If you were already signed in, your session may have expired." />
+      ) : null}
       <LoginForm next={next} />
     </AuthCard>
   );

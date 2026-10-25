@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { finalizeApplication } from "@/lib/membership";
+import { rateLimit, TOO_MANY } from "@/lib/rate-limit";
 import { accountSchema, applicationSchema } from "@/lib/validation";
 
 export type JoinState = {
@@ -48,6 +49,7 @@ export async function submitApplication(
     return { fieldErrors };
   }
 
+  if (!(await rateLimit("signup", 6, 3600))) return { error: TOO_MANY };
   const { data, error } = await db.auth.signUp({
     email: account.data.email,
     password: account.data.password,

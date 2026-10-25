@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { adminNotifyEmails, esc, sendEmail } from "@/lib/email/resend";
+import { rateLimit, TOO_MANY } from "@/lib/rate-limit";
 import { contactSchema } from "@/lib/validation";
 
 export type ContactState = {
@@ -35,6 +36,7 @@ export async function sendContactMessage(
     };
   }
   const { name, email, subject, message } = parsed.data;
+  if (!(await rateLimit("contact", 5, 3600))) return { error: TOO_MANY };
 
   const db = await createClient();
   const { error } = await db

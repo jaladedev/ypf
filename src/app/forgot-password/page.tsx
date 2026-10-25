@@ -3,7 +3,7 @@ import Link from "next/link";
 import { AuthCard } from "@/components/auth/auth-card";
 import { ForgotPasswordForm } from "@/components/auth/simple-forms";
 
-export const metadata: Metadata = { title: "Reset password | Young Planners Forum" };
+export const metadata: Metadata = { title: "Reset password | Young Planners Forum", robots: { index: false } };
 
 export default function ForgotPasswordPage() {
   return (

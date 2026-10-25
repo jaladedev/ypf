@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { sendEmail } from "@/lib/email/resend";
 import { formatDate, formatTimeRange } from "@/lib/format";
+import { rateLimit, TOO_MANY } from "@/lib/rate-limit";
 import { eventRegistrationSchema } from "@/lib/validation";
 
 export type RegisterState = {
@@ -24,6 +25,7 @@ export async function registerForEvent(
     const f = parsed.error.flatten().fieldErrors;
     return { fieldErrors: { name: f.name?.[0], email: f.email?.[0] } };
   }
+  if (!(await rateLimit("register", 20, 3600))) return { error: TOO_MANY };
   // Cookie client: if the visitor is signed in the registration is linked to their account.
   const db = await createClient();
   // Look the event up by slug on the live database: the event page is cached, so an id

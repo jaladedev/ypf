@@ -227,6 +227,14 @@ export type Database = {
         };
         Returns: AdminMemberRow[];
       };
+      check_rate_limit: {
+        Args: { p_key: string; p_limit: number; p_window_seconds: number };
+        Returns: boolean;
+      };
+      run_maintenance: {
+        Args: Record<string, never>;
+        Returns: { jobs_archived: number; rate_limit_rows_removed: number };
+      };
       log_admin_action: {
         Args: { p_action: string; p_summary: string };
         Returns: undefined;

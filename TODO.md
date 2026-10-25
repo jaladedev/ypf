@@ -24,7 +24,7 @@ Legend: `[ ]` to do, `[~]` partly done (see note), `[x]` done. Each phase ends w
 - [x] (Phase 4) Who can be a member: any young planner.
 - [x] (Phase 5) Exports: CSV and Excel (.xlsx).
 - [x] (Phase 6) Hosting target: Vercel.
-- [ ] (Phase 6) Production domain name.
+- [ ] (Phase 6) Production domain name (blocks deployment).
 
 ---
 
@@ -170,17 +170,17 @@ Status: built; lint, typecheck and production build pass. `npm run test:db`: 28 
 ---
 
 ## Phase 6: Launch hardening
-- [ ] **Permissions testing**: automated tests for every role against every table and route; attempt privilege escalation
-- [ ] **Mobile usability**: manual pass on real devices (small Android, iPhone), tap-target sizes, forms on slow 3G
-- [ ] **Email delivery**: production SMTP, SPF/DKIM/DMARC, test signup, approval, registration and contact emails; plain-text fallbacks
-- [ ] **Error states**: friendly messages for network failures, expired sessions, full events, closed jobs
-- [ ] **Accessibility**: WCAG 2.1 AA checks (contrast, labels, focus order, alt text, skip link), axe audit
-- [ ] **SEO**: metadata and Open Graph per page, `sitemap.xml`, `robots.txt`, JSON-LD for events and job postings
-- [ ] **Performance**: Lighthouse targets (performance 90+ on mobile), image sizes, caching/revalidation
-- [ ] **Security**: rate limiting, CSRF/XSS review, security headers, secrets audit, storage bucket policies
-- [ ] **Operations**: scheduled job to archive expired jobs and close past events, database backups, error monitoring, analytics (privacy-friendly)
-- [ ] **Legal**: Privacy Policy and Terms reviewed; NDPA-aware data handling and consent text on the Join form
-- [ ] **Deployment (Vercel)**: Vercel project and env vars, Supabase redirect URLs and Google OAuth redirect for the production domain, domain, preview and production pipelines, launch checklist
+- [x] **Permissions testing**: `npm run test:db` now 45 tests, including a role x table matrix (anon, member, unapproved editor, editor, admin; read/update/delete, rolled back), own-only profiles, saved-jobs privacy, internal functions denied to clients
+- [ ] **Mobile usability**: no overflow at 360px on public and admin pages (automated); real Android/iPhone and slow-3G pass still needs devices (LAUNCH.md)
+- [ ] **Email delivery**: needs your domain and Resend account; steps in LAUNCH.md section 2
+- [x] **Error states**: friendly messages for full events, closed registration, expired jobs (404), expired sessions (login notice), route error boundaries for admin, dashboard and the whole app
+- [x] **Accessibility**: axe 0 violations across public, join (with consent error), member and admin pages; Lighthouse accessibility 100
+- [x] **SEO**: metadata, canonical, Open Graph and Twitter per page, `sitemap.xml` (published content only), `robots.txt` (blocks /admin, /dashboard), Event and JobPosting JSON-LD (escaped), noindex on login/pending. Open Graph image still to add
+- [~] **Performance**: Lighthouse mobile (throttled, sandbox) performance 88, best practices 100, SEO 92; pages are ISR cached. Re-measure on Vercel; real photos will need sizing
+- [x] **Security**: DB rate limiting (contact 5/h, register 20/h, signup 6/h, login 20/15min, email links 8/h; hashed IPs), CSP and security headers, HSTS on https, secrets audit (service-role client only in server files, no keys in repo), storage policies tested, JSON-LD/markdown XSS tests
+- [~] **Operations**: daily cron `/api/cron/maintenance` (archives jobs closed 14+ days, purges old rate-limit rows). Backups, error monitoring and analytics need your accounts (LAUNCH.md section 6). Past events are not auto-archived: they stay visible under Past events
+- [~] **Legal**: NDPA consent checkbox on Join (required); Privacy page expanded (controller, legal basis, retention, rights, NDPC complaint). Still marked Draft pending lawyer review
+- [ ] **Deployment (Vercel)**: checklist in `LAUNCH.md`; needs the production domain
 
 **Acceptance:** all tests pass; Lighthouse and axe results meet targets; a full signup-to-approval journey works in production with real email.
 
@@ -215,3 +215,4 @@ Status: built; lint, typecheck and production build pass. `npm run test:db`: 28 
 - 2026-10-24: Phase 3 (Public content) built: home, about, leadership, events + detail + calendar, jobs + detail, news + article, contact, privacy, terms, 404/error pages. Verified in browser against a local database.
 - 2026-10-24: Phase 4 (Membership) built and verified in a browser: join form, email-verified application, admin review, member dashboard, profile, saved jobs, settings.
 - 2026-10-25: Phase 5 (Administration) built and verified in a browser: admin shell, dashboard, members, events, jobs, news, leadership, messages, settings, media, audit log, CSV + Excel exports, avatar upload. Migration 8 adds the audit log, `admin_list_members()` and the storage buckets.
+- 2026-10-25: Phase 6 (Launch hardening) built: migration 9 (rate limits, maintenance), rate limiting, cron, security headers, SEO, consent, error pages, permission matrix tests. Verified: 45 DB tests, 82-check Phase 6 browser suite, 86-check Phase 5 regression. Remaining items need your domain, accounts and devices: see LAUNCH.md.

@@ -641,3 +641,139 @@ test("storage: only editors and admins write to the media bucket", async () => {
   assert.equal(bucket.public, true);
   assert.ok(!bucket.allowed_mime_types.includes("image/svg+xml"));
 });
+
+// ------------------------------------------------- Phase 6: permission matrix
+// Every role against every table, for read / update / delete. Writes are rolled back.
+const ROLES = ["anon", "member", "pendingEditor", "editor", "admin"];
+const asRole = (role, fn) => (role === "anon" ? asAnon(fn) : asUser(role, fn));
+
+/** Run a statement, report affected/visible row count, or "denied" on a permission/RLS error. */
+async function attempt(sql) {
+  await db.exec("begin");
+  try {
+    const r = await db.query(sql);
+    return r.rows.length;
+  } catch (e) {
+    if (/permission denied|row-level security|Only admins/.test(e.message)) return "denied";
+    throw new Error(`${sql} -> ${e.message}`);
+  } finally {
+    await db.exec("rollback");
+  }
+}
+const none = (v) => v === 0 || v === "denied";
+
+test("setup: matrix fixtures", async () => {
+  await db.exec(`
+    insert into public.rate_limits (key, hits) values ('fixture', 1) on conflict do nothing;
+    insert into public.posts (title, slug, status, published_at) values ('Matrix post','matrix-post','published', now()) on conflict do nothing;
+  `);
+});
+
+// [table, update-set clause, who may read ALL rows, who may update, who may delete]
+const matrix = [
+  ["events", "title = title", ["anon", "member", "pendingEditor", "editor", "admin"], ["editor", "admin"], ["editor", "admin"]],
+  ["event_speakers", "name = name", ["anon", "member", "pendingEditor", "editor", "admin"], ["editor", "admin"], ["editor", "admin"]],
+  ["jobs", "title = title", ["anon", "member", "pendingEditor", "editor", "admin"], ["editor", "admin"], ["editor", "admin"]],
+  ["posts", "title = title", ["anon", "member", "pendingEditor", "editor", "admin"], ["editor", "admin"], ["editor", "admin"]],
+  ["leaders", "name = name", ["anon", "member", "pendingEditor", "editor", "admin"], ["editor", "admin"], ["editor", "admin"]],
+  ["site_settings", "key = key", ["anon", "member", "pendingEditor", "editor", "admin"], ["admin"], ["admin"]],
+  ["contact_messages", "name = name", ["admin"], ["admin"], ["admin"]],
+  ["membership_applications", "status = status", ["admin"], ["admin"], []],
+  ["event_registrations", "name = name", ["editor", "admin"], ["editor", "admin"], ["editor", "admin"], ["member", "pendingEditor"]],
+  ["audit_log", "summary = summary", ["admin"], [], []],
+  ["rate_limits", "hits = hits", [], [], []],
+];
+
+for (const [table, set, canReadAll, canUpdate, canDelete, ownRead = []] of matrix) {
+  test(`matrix: ${table}`, async () => {
+    for (const role of ROLES) {
+      await asRole(role, async () => {
+        const [{ n: total }] = (await q(`select count(*)::int as n from (select 1) s`)) ?? [{ n: 0 }];
+        void total;
+        // read
+        const seen = await attempt(`select 1 from public.${table}`);
+        // privileged rows only: compare against what an admin sees for "all" tables
+        if (ownRead.includes(role)) {
+          // may see their own rows only (policy "read own"); covered by the registration tests above
+        } else if (canReadAll.includes(role)) {
+          // Public content tables show only the public subset to anon/member; they must at least see rows.
+          assert.ok(!none(seen), `${role} should read ${table}`);
+        } else {
+          assert.ok(none(seen), `${role} must not read ${table} (saw ${seen})`);
+        }
+        const upd = await attempt(`update public.${table} set ${set} returning 1`);
+        assert.equal(!none(upd), canUpdate.includes(role), `${role} update ${table} -> ${upd}`);
+        const del = await attempt(`delete from public.${table} returning 1`);
+        assert.equal(!none(del), canDelete.includes(role), `${role} delete ${table} -> ${del}`);
+      });
+    }
+  });
+}
+
+test("matrix: profiles are own-only except for admins, and can never be deleted", async () => {
+  for (const role of ROLES) {
+    await asRole(role, async () => {
+      const seen = await attempt(`select 1 from public.profiles`);
+      if (role === "anon") assert.ok(none(seen));
+      else if (role === "admin") assert.ok(seen > 1);
+      else assert.equal(seen, 1, `${role} sees only themselves`);
+      assert.ok(none(await attempt(`delete from public.profiles returning 1`)), `${role} cannot delete profiles`);
+      const priv = await attempt(`update public.profiles set role='admin' where id = auth.uid() returning 1`);
+      assert.ok(role === "admin" ? !none(priv) : none(priv), `${role} privilege escalation via role column`);
+    });
+  }
+});
+
+test("matrix: saved jobs and registrations stay private to their owner", async () => {
+  await asUser("other", async () => {
+    assert.equal(await attempt(`select 1 from public.saved_jobs where user_id <> auth.uid()`), 0);
+  });
+  await asAnon(async () => {
+    assert.ok(none(await attempt(`select 1 from public.saved_jobs`)));
+  });
+});
+
+test("privilege escalation: internal functions are not callable by API roles", async () => {
+  const calls = [
+    `select public.write_audit('x','y','z','forged')`,
+    `select public.check_rate_limit('k', 1, 60)`,
+    `select public.run_maintenance()`,
+  ];
+  for (const role of ROLES) {
+    await asRole(role, async () => {
+      for (const sql of calls) {
+        assert.equal(await attempt(sql), "denied", `${role}: ${sql}`);
+      }
+    });
+  }
+});
+
+test("rate limiter: allows up to the limit, then refuses, then recovers after the window", async () => {
+  await as("service_role", null, async () => {
+    const hit = async () => (await q(`select public.check_rate_limit('t:one', 3, 60) as ok`))[0].ok;
+    assert.deepEqual([await hit(), await hit(), await hit(), await hit()], [true, true, true, false]);
+    // different key is independent
+    assert.equal((await q(`select public.check_rate_limit('t:two', 3, 60) as ok`))[0].ok, true);
+  });
+  await db.exec(`update public.rate_limits set window_start = now() - interval '2 minutes' where key='t:one'`);
+  await as("service_role", null, async () => {
+    assert.equal((await q(`select public.check_rate_limit('t:one', 3, 60) as ok`))[0].ok, true);
+  });
+});
+
+test("maintenance archives long-closed jobs only, tidies counters, and is audited", async () => {
+  await db.exec(`
+    insert into public.jobs (title, slug, organisation, description, job_type, apply_email, deadline, status) values
+      ('Old closed','old-closed','Org','Description text here','full_time','a@b.dev', current_date - 30, 'published'),
+      ('Just closed','just-closed','Org','Description text here','full_time','a@b.dev', current_date - 3, 'published'),
+      ('Still open','still-open','Org','Description text here','full_time','a@b.dev', current_date + 5, 'published');
+    insert into public.rate_limits (key, window_start, hits) values ('stale', now() - interval '3 days', 1);
+  `);
+  const out = await as("service_role", null, async () => (await q(`select public.run_maintenance() as r`))[0].r);
+  assert.equal(out.jobs_archived, 1);
+  assert.ok(out.rate_limit_rows_removed >= 1);
+  const rows = await q(`select slug, status from public.jobs where slug in ('old-closed','just-closed','still-open') order by slug`);
+  assert.deepEqual(rows.map((r) => [r.slug, r.status]), [["just-closed", "published"], ["old-closed", "archived"], ["still-open", "published"]]);
+  assert.ok((await q(`select 1 from public.audit_log where action='maintenance.jobs_archived'`)).length >= 1);
+  assert.equal((await q(`select 1 from public.rate_limits where key='stale'`)).length, 0);
+});

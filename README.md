@@ -166,3 +166,6 @@ without checking permissions first. It bypasses RLS.
 - Sign in as an approved editor or admin and open `/admin`. Editors manage events, jobs, news, leaders and media; admins also manage members, roles, messages, site settings and see the audit log.
 - Migration `20261025000008_admin.sql` creates the audit log, the admin member listing function and the Storage buckets `avatars` and `media` (public read; writes limited by policy). After running migrations on a hosted project, open Storage in the Supabase dashboard and confirm both buckets exist.
 - Exports (CSV and Excel) are under the Members, Messages and event Registrations screens.
+
+## Launch
+See `LAUNCH.md` for the production checklist. Phase 6 adds env vars `CRON_SECRET` and `RATE_LIMIT_SALT` (see `.env.example`); `vercel.json` schedules the daily maintenance job.

@@ -7,7 +7,7 @@ import { requireUser } from "@/lib/auth/session";
 import { formatDate } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata: Metadata = { title: "Membership status | Young Planners Forum" };
+export const metadata: Metadata = { title: "Membership status | Young Planners Forum", robots: { index: false } };
 
 export default async function PendingPage() {
   const { user, profile } = await requireUser("/pending");

@@ -6,8 +6,9 @@ Paste this (or attach it with ypf-website.zip and TODO.md) at the start of the n
 Website for the Young Planners Forum (YPF) of the Nigerian Institute of Town Planners. Next.js 16 (App Router, `proxy.ts` not middleware) + TypeScript + Tailwind v4 + Supabase, deployed on Vercel. Single chapter. Owner: Dev (jaladedev). Design reference: 14-screen mockup (home, about, leadership, events, event detail, jobs, job detail, news, article, contact, join, login, member dashboard, admin dashboard).
 
 ## Status
-- Phases 1-5 done (Foundation, Design system, Public pages, Membership, Administration).
-- NEXT: Phase 6 Launch hardening. Plan and ticks are in `TODO.md` (keep it updated).
+- Phases 1-6 code done. Remaining launch work needs the owner (domain, Vercel, Supabase, Resend, devices, legal): `LAUNCH.md`.
+- Phase 6 added: migration 9 (`check_rate_limit`, `run_maintenance`), `src/lib/rate-limit.ts`, `/api/cron/maintenance` + `vercel.json`, security headers in `next.config.ts`, SEO files (`robots.ts`, `sitemap.ts`, JSON-LD), Join consent checkbox, error boundaries. Env: `CRON_SECRET`, `RATE_LIMIT_SALT`.
+- Carry-over: change-email and self-service deletion, signed-in header state, real photos/logo, OG image.
 
 ## Decisions made
 Google sign-in at launch; event registration open to anyone (name + email, linked to account if signed in); any young planner can apply, admin approves; hosting Vercel; email via Resend (plain fetch, skips quietly with no key); jobs are admin-posted with external apply link/email; single chapter; admin exports in **CSV and Excel (.xlsx)**. Open: production domain name.
@@ -33,7 +34,7 @@ Roles member/editor/admin; membership_status pending/approved/rejected/suspended
 - Test stack: `/tmp` stand-in is gone in a new session. Rebuild with local Postgres 16 + PostgREST binary + a small node gateway that fakes Supabase Auth and Storage (storage writes run through the real RLS policies). Background processes get reaped, so start everything in the same command as the tests. Browser suite: 85 checks.
 
 ## Known gaps
-Storage uploads untested on a hosted project; change-email and self-service deletion still open; Real Supabase Auth round trip (confirmation emails, Google) untested; no live Resend test; About/Privacy/Terms text is draft (legal review in Phase 6); no real photos/logo; header shows Sign in / Join YPF even when signed in; contact form has no per-IP rate limit.
+Storage uploads untested on a hosted project; change-email and self-service deletion still open; Real Supabase Auth round trip (confirmation emails, Google) untested; no live Resend test; About/Privacy/Terms text is draft (legal review in Phase 6); no real photos/logo; header shows Sign in / Join YPF even when signed in; OG image absent.
 
 ## Verification setup (lives outside the project, may be gone in a new session)
 Real Postgres + PostgREST + a small stand-in for Supabase Auth in /tmp/ypfstack (start.mjs), Playwright + axe scripts in the scratchpad (`p3.mjs` public pages, `p4.mjs` membership flow). If missing, rebuild or test against a real Supabase project. Reset the DB => also delete `.next/cache/fetch-cache` and restart `next start`.
