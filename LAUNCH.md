@@ -27,6 +27,7 @@ What the code already does is in TODO.md (Phase 6). This list is what only you c
 - [ ] Sign up, confirm email, apply, approve as admin, sign in as the member.
 - [ ] Google sign-in; magic link; password reset.
 - [ ] Register for an event signed out and signed in; submit the contact form; check emails arrive (not spam).
+- [ ] Change email on a test account (confirmation link arrives); delete a test account.
 - [ ] Upload an avatar and a media image; check they display.
 - [ ] Run Lighthouse on the live home page (mobile). Sandbox result was performance 88, accessibility 100, best-practices 100, SEO 92 on a throttled local run.
 - [ ] Real-device pass: a small Android and an iPhone (join form, menu, event registration, admin on phone), plus a slow-3G check.
@@ -34,7 +35,7 @@ What the code already does is in TODO.md (Phase 6). This list is what only you c
 
 ## 5. Content and legal
 - [ ] Have a lawyer review Privacy and Terms (NDPA 2023); then remove the "Draft" banner on `/privacy` and `/terms`.
-- [ ] Replace placeholder skyline images and add the logo; add a 1200x630 Open Graph image.
+- [ ] Replace placeholder skyline images and add the logo; the Open Graph image is generated (edit `src/app/opengraph-image.tsx` for a branded one).
 - [ ] Fill About text and real figures in Admin > Settings.
 
 ## 6. Monitoring

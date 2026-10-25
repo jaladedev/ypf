@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
-import { ButtonLink } from "@/components/ui/button";
+import { MobileAuth } from "./header-auth";
 import { NavLinks } from "./nav-links";
 
 /** Hamburger menu shown below the `lg` breakpoint. */
@@ -50,14 +50,7 @@ export function MobileNav() {
           className="border-line shadow-pop absolute inset-x-0 top-full max-h-[calc(100dvh-4rem)] overflow-y-auto border-b bg-white px-4 pt-2 pb-5"
         >
           <NavLinks orientation="vertical" onNavigate={close} />
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <ButtonLink href="/login" variant="secondary" onClick={close}>
-              Sign in
-            </ButtonLink>
-            <ButtonLink href="/join" onClick={close}>
-              Join YPF
-            </ButtonLink>
-          </div>
+          <MobileAuth onNavigate={close} />
         </nav>
       ) : null}
     </div>

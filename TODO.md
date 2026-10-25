@@ -136,7 +136,7 @@ Goal: sign-up through approval to member dashboard.
 - [x] Saved jobs: `saved_jobs` table with RLS (+test), Save button on job pages, `/dashboard/saved`
 - [x] Account settings: change password; request account deletion (sends a request to admins)
 - [x] Avatar upload (done in Phase 5: `avatars` bucket + policies, form on the profile page)
-- [ ] Change email address; self-service account deletion (currently an admin-handled request)
+- [x] Change email address (confirmation link to the new address, via Supabase) and self-service account deletion (type DELETE; removes account, profile, saved jobs, registrations, avatar files; last admin protected). Done after Phase 6
 
 **Acceptance:** a new user can apply, an admin can approve them, and the member then sees their dashboard; a rejected or pending user cannot access member pages. Met.
 
@@ -175,7 +175,7 @@ Status: built; lint, typecheck and production build pass. `npm run test:db`: 28 
 - [ ] **Email delivery**: needs your domain and Resend account; steps in LAUNCH.md section 2
 - [x] **Error states**: friendly messages for full events, closed registration, expired jobs (404), expired sessions (login notice), route error boundaries for admin, dashboard and the whole app
 - [x] **Accessibility**: axe 0 violations across public, join (with consent error), member and admin pages; Lighthouse accessibility 100
-- [x] **SEO**: metadata, canonical, Open Graph and Twitter per page, `sitemap.xml` (published content only), `robots.txt` (blocks /admin, /dashboard), Event and JobPosting JSON-LD (escaped), noindex on login/pending. Open Graph image still to add
+- [x] **SEO**: metadata, canonical, Open Graph and Twitter per page, `sitemap.xml` (published content only), `robots.txt` (blocks /admin, /dashboard), Event and JobPosting JSON-LD (escaped), noindex on login/pending.
 - [~] **Performance**: Lighthouse mobile (throttled, sandbox) performance 88, best practices 100, SEO 92; pages are ISR cached. Re-measure on Vercel; real photos will need sizing
 - [x] **Security**: DB rate limiting (contact 5/h, register 20/h, signup 6/h, login 20/15min, email links 8/h; hashed IPs), CSP and security headers, HSTS on https, secrets audit (service-role client only in server files, no keys in repo), storage policies tested, JSON-LD/markdown XSS tests
 - [~] **Operations**: daily cron `/api/cron/maintenance` (archives jobs closed 14+ days, purges old rate-limit rows). Backups, error monitoring and analytics need your accounts (LAUNCH.md section 6). Past events are not auto-archived: they stay visible under Past events
@@ -216,3 +216,4 @@ Status: built; lint, typecheck and production build pass. `npm run test:db`: 28 
 - 2026-10-24: Phase 4 (Membership) built and verified in a browser: join form, email-verified application, admin review, member dashboard, profile, saved jobs, settings.
 - 2026-10-25: Phase 5 (Administration) built and verified in a browser: admin shell, dashboard, members, events, jobs, news, leadership, messages, settings, media, audit log, CSV + Excel exports, avatar upload. Migration 8 adds the audit log, `admin_list_members()` and the storage buckets.
 - 2026-10-25: Phase 6 (Launch hardening) built: migration 9 (rate limits, maintenance), rate limiting, cron, security headers, SEO, consent, error pages, permission matrix tests. Verified: 45 DB tests, 82-check Phase 6 browser suite, 86-check Phase 5 regression. Remaining items need your domain, accounts and devices: see LAUNCH.md.
+- 2026-10-25: Carry-overs done: change email, self-service account deletion, signed-in header (My dashboard, swapped client-side so pages stay cached), generated Open Graph image (`/opengraph-image`). Browser suite p7: 19 checks; regressions p5 86 and p6 82 pass. Real Supabase email-change round trip untested.

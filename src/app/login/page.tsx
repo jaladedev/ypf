@@ -27,7 +27,10 @@ export default async function LoginPage(props: PageProps<"/login">) {
   return (
     <AuthCard title="Welcome back" description="Sign in to your YPF account.">
       <FormAlert error={errorKey ? errors[errorKey] : undefined} />
-      {!errorKey && typeof params.next === "string" ? (
+      {params.deleted ? (
+        <FormAlert message="Your account and personal data have been deleted." />
+      ) : null}
+      {!errorKey && !params.deleted && typeof params.next === "string" ? (
         <FormAlert message="Please sign in to continue. If you were already signed in, your session may have expired." />
       ) : null}
       <LoginForm next={next} />
