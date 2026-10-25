@@ -6,12 +6,12 @@ Paste this (or attach it with ypf-website.zip and TODO.md) at the start of the n
 Website for the Young Planners Forum (YPF) of the Nigerian Institute of Town Planners. Next.js 16 (App Router, `proxy.ts` not middleware) + TypeScript + Tailwind v4 + Supabase, deployed on Vercel. Single chapter. Owner: Dev (jaladedev). Design reference: 14-screen mockup (home, about, leadership, events, event detail, jobs, job detail, news, article, contact, join, login, member dashboard, admin dashboard).
 
 ## Status
-- Phases 1-6 code done. Remaining launch work needs the owner (domain, Vercel, Supabase, Resend, devices, legal): `LAUNCH.md`.
+- Phases 1-6 code done. Remaining launch work needs the owner (Vercel, Supabase, Resend + a custom domain for email, devices, legal): `LAUNCH.md`.
 - Phase 6 added: migration 9 (`check_rate_limit`, `run_maintenance`), `src/lib/rate-limit.ts`, `/api/cron/maintenance` + `vercel.json`, security headers in `next.config.ts`, SEO files (`robots.ts`, `sitemap.ts`, JSON-LD), Join consent checkbox, error boundaries. Env: `CRON_SECRET`, `RATE_LIMIT_SALT`.
 - Carry-overs done: change-email and self-service deletion (`dashboard/settings`), signed-in header (`components/layout/header-auth.tsx`), OG image (`app/opengraph-image.tsx`). Left: real photos/logo.
 
 ## Decisions made
-Google sign-in at launch; event registration open to anyone (name + email, linked to account if signed in); any young planner can apply, admin approves; hosting Vercel; email via Resend (plain fetch, skips quietly with no key); jobs are admin-posted with external apply link/email; single chapter; admin exports in **CSV and Excel (.xlsx)**. Open: production domain name.
+Google sign-in at launch; event registration open to anyone (name + email, linked to account if signed in); any young planner can apply, admin approves; hosting Vercel; email via Resend (plain fetch, skips quietly with no key); jobs are admin-posted with external apply link/email; single chapter; admin exports in **CSV and Excel (.xlsx)**. Production DB: Supabase project `ypf-website` (ref onevajmpaezfsgiofbpj, eu-west-2), migrations 1-10 applied. Domain: using the free vercel.app address for now; custom domain later (needed for Resend email).
 
 ## Standing preferences
 Always send changed files to the user (SendUserFile: TODO.md + rebuilt zip + screenshots) after each piece of work. Always update TODO.md. User gives go-aheads as "phase N". Update progress without long recaps.

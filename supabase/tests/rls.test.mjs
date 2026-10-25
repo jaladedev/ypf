@@ -33,6 +33,14 @@ async function as(role, uid, fn) {
 const q = async (sql, params) => (await db.query(sql, params)).rows;
 const asAnon = (fn) => as("anon", null, fn);
 const asUser = (name, fn) => as("authenticated", ids[name], fn);
+// A read is "blocked" if it returns nothing (RLS) or is refused outright (no table privilege).
+const blocked = async (sql) => {
+  try {
+    return (await db.query(sql)).rows.length === 0;
+  } catch (e) {
+    return /permission denied/.test(String(e.message));
+  }
+};
 const slugs = (rows) => rows.map((r) => r.slug).sort();
 
 before(async () => {
@@ -105,10 +113,10 @@ test("anon sees only published, current content", async () => {
 
 test("anon cannot read private tables", async () => {
   await asAnon(async () => {
-    assert.equal((await q(`select 1 from public.profiles`)).length, 0);
-    assert.equal((await q(`select 1 from public.membership_applications`)).length, 0);
-    assert.equal((await q(`select 1 from public.event_registrations`)).length, 0);
-    assert.equal((await q(`select 1 from public.contact_messages`)).length, 0);
+    assert.ok(await blocked(`select 1 from public.profiles`), "anon blocked from profiles");
+    assert.ok(await blocked(`select 1 from public.membership_applications`), "anon blocked from membership_applications");
+    assert.ok(await blocked(`select 1 from public.event_registrations`), "anon blocked from event_registrations");
+    assert.ok(await blocked(`select 1 from public.contact_messages`), "anon blocked from contact_messages");
   });
 });
 
@@ -118,18 +126,16 @@ test("anon cannot write content", async () => {
       db.query(
         `insert into public.events (title, slug, starts_at) values ('Hack','hack', now())`,
       ),
-      /row-level security/,
+      /row-level security|permission denied/,
     );
     await assert.rejects(
       db.query(`insert into public.jobs (title, slug, organisation, description, job_type, apply_url)
                 values ('Hack','hack','x','y','full_time','https://x.y')`),
-      /row-level security/,
+      /row-level security|permission denied/,
     );
-    // UPDATE/DELETE silently match no rows under RLS
-    const upd = await db.query(`update public.leaders set name='x' returning id`);
-    assert.equal(upd.rows.length, 0);
-    const del = await db.query(`delete from public.posts returning id`);
-    assert.equal(del.rows.length, 0);
+    // UPDATE/DELETE are refused (no privilege) or match no rows (RLS)
+    await assert.rejects(db.query(`update public.leaders set name='x' returning id`), /permission denied/);
+    await assert.rejects(db.query(`delete from public.posts returning id`), /permission denied/);
   });
 });
 
@@ -150,7 +156,7 @@ test("anon can send a contact message but not read or fake its status", async ()
       ),
       /check constraint/,
     );
-    assert.equal((await q(`select 1 from public.contact_messages`)).length, 0);
+    assert.ok(await blocked(`select 1 from public.contact_messages`), "anon can't read messages");
   });
 });
 

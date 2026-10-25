@@ -169,3 +169,5 @@ without checking permissions first. It bypasses RLS.
 
 ## Launch
 See `LAUNCH.md` for the production checklist. Phase 6 adds env vars `CRON_SECRET` and `RATE_LIMIT_SALT` (see `.env.example`); `vercel.json` schedules the daily maintenance job.
+
+Migrations run in filename order, 1 to 10 (10 tightens table grants for hosted Supabase). Apply with `supabase db push` or paste each into the SQL editor.
