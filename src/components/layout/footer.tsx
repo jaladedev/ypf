@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AuthSwitch } from "./header-auth";
 import { Container } from "./container";
 import { Logo } from "./logo";
 import { footerNav, siteConfig } from "@/lib/site";
@@ -14,16 +15,28 @@ function LinkColumn({
     <div>
       <h2 className="text-sm font-semibold text-white">{title}</h2>
       <ul className="mt-4 space-y-2.5">
-        {links.map((l) => (
-          <li key={l.href}>
-            <Link
-              href={l.href}
-              className="text-sm text-white/75 hover:text-white hover:underline"
-            >
-              {l.label}
-            </Link>
-          </li>
-        ))}
+        {links.map((l) => {
+          const item = (href: string, label: string) => (
+            <li key={href}>
+              <Link
+                href={href}
+                className="text-sm text-white/75 hover:text-white hover:underline"
+              >
+                {label}
+              </Link>
+            </li>
+          );
+          if (l.href === "/join") return <AuthSwitch key={l.href} guest={item(l.href, l.label)} />;
+          if (l.href === "/login")
+            return (
+              <AuthSwitch
+                key={l.href}
+                guest={item(l.href, l.label)}
+                member={item("/dashboard", "My dashboard")}
+              />
+            );
+          return item(l.href, l.label);
+        })}
       </ul>
     </div>
   );

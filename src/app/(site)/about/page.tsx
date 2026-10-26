@@ -1,8 +1,8 @@
+import { JoinButton } from "@/components/layout/header-auth";
 import type { Metadata } from "next";
 import { Eye, Handshake, Lightbulb, Target } from "lucide-react";
 import { PageHero } from "@/components/layout/page-hero";
 import { Section, SectionHeading } from "@/components/layout/section";
-import { ButtonLink } from "@/components/ui/button";
 import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -93,9 +93,7 @@ export default function AboutPage() {
       <Section tone="dark">
         <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
           <h2 className="text-h2">Be part of the next generation of planners.</h2>
-          <ButtonLink href="/join" variant="accent" size="lg">
-            Join YPF
-          </ButtonLink>
+          <JoinButton variant="accent" size="lg" />
         </div>
       </Section>
     </>

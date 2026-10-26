@@ -1,3 +1,4 @@
+import { JoinButton } from "@/components/layout/header-auth";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { Globe2, GraduationCap, Users } from "lucide-react";
@@ -45,9 +46,7 @@ export default async function Home() {
         subtitle="The Young Planners Forum (YPF) is a network of young and emerging planning professionals committed to building sustainable cities."
         actions={
           <>
-            <ButtonLink href="/join" variant="accent" size="lg">
-              Join YPF
-            </ButtonLink>
+            <JoinButton variant="accent" size="lg" />
             <ButtonLink href="/about" variant="outline-light" size="lg">
               About YPF
             </ButtonLink>
@@ -186,9 +185,7 @@ export default async function Home() {
               Membership is open to any young planner. Apply in a few minutes.
             </p>
           </div>
-          <ButtonLink href="/join" variant="accent" size="lg">
-            Join YPF
-          </ButtonLink>
+          <JoinButton variant="accent" size="lg" />
         </div>
       </Section>
     </>
