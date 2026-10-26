@@ -41,7 +41,7 @@ export function JobRow({
         <Briefcase className="size-5" aria-hidden />
       </span>
       <div className="min-w-0 flex-1">
-        <Heading className="text-ink truncate text-base font-semibold">
+        <Heading className="text-ink line-clamp-2 text-base font-semibold">
           <Link
             href={`/jobs/${job.slug}`}
             className="after:absolute after:inset-0 after:content-['']"
