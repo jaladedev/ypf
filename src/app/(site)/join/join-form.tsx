@@ -9,7 +9,7 @@ import { Checkbox, Input, Select, Textarea } from "@/components/ui/form-controls
 import { FormAlert } from "@/components/ui/form-alert";
 import { Stepper } from "@/components/ui/stepper";
 import { errorMessage, useZodForm } from "@/lib/forms";
-import { nigerianStates } from "@/lib/nigeria";
+import { oyoLgas } from "@/lib/oyo";
 import {
   applicationSchema,
   joinStepFields,
@@ -135,16 +135,16 @@ export function JoinForm({
               {...register("phone")}
             />
             <Select
-              label="State of residence"
+              label="Local government area (LGA)"
               requiredMark
-              error={err("state")}
+              error={err("lga")}
               defaultValue=""
-              {...register("state")}
+              {...register("lga")}
             >
               <option value="" disabled>
-                Select your state
+                Select your LGA
               </option>
-              {nigerianStates.map((s) => (
+              {oyoLgas.map((s) => (
                 <option key={s}>{s}</option>
               ))}
             </Select>

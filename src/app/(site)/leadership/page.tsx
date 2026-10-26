@@ -10,7 +10,7 @@ export const revalidate = 300;
 export const metadata: Metadata = {
   title: "Leadership",
   description:
-    "Meet the national executives and coordinators of the Young Planners Forum.",
+    "Meet the executives and coordinators of the Young Planners Forum, Oyo State.",
 };
 
 function Grid({ leaders }: { leaders: Leader[] }) {
@@ -47,7 +47,7 @@ export default async function LeadershipPage() {
           tabs={[
             {
               id: "executives",
-              label: "National executives",
+              label: "Executive committee",
               content: (
                 <Grid leaders={leaders.filter((l) => l.group === "national_executive")} />
               ),

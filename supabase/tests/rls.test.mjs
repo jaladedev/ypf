@@ -101,7 +101,7 @@ test("anon sees only published, current content", async () => {
     assert.ok(!events.includes("draft-event"));
 
     const jobs = slugs(await q(`select slug from public.jobs`));
-    assert.ok(jobs.includes("planning-officer-lagos-state"));
+    assert.ok(jobs.includes("planning-officer-oyo-state"));
     assert.ok(!jobs.includes("expired-role"), "expired jobs are hidden");
 
     const posts = slugs(await q(`select slug from public.posts`));

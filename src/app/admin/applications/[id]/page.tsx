@@ -17,6 +17,7 @@ export const metadata: Metadata = {
 const labels: Record<string, string> = {
   full_name: "Full name",
   phone: "Phone",
+  lga: "Local government area",
   state: "State",
   institution: "Institution",
   career_stage: "Current stage",

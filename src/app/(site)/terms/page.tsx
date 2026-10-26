@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Terms of Use" };
 // DRAFT text. Have it reviewed by a legal professional before launch (TODO.md, Phase 6).
 const body = `## Using this website
 
-This website is run by the Young Planners Forum of the Nigerian Institute of Town Planners. By using it you agree to these terms.
+This website is run by the Young Planners Forum (Oyo State) of the Nigerian Institute of Town Planners. By using it you agree to these terms.
 
 ## Membership
 

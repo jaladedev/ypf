@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Young Planners Forum, Nigerian Institute of Town Planners";
+export const alt = "Young Planners Forum, Oyo State";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -26,7 +26,7 @@ export default function OpengraphImage() {
           Young Planners Forum
         </div>
         <div style={{ fontSize: 34, marginTop: 28, opacity: 0.9 }}>
-          Building sustainable cities, together.
+          Oyo State. Building sustainable cities, together.
         </div>
       </div>
     ),

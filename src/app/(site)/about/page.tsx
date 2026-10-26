@@ -7,7 +7,7 @@ import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About",
-  description: `About the ${siteConfig.name} of the ${siteConfig.parent}: our story, mission and values.`,
+  description: `About the ${siteConfig.name} in ${siteConfig.region}, of the ${siteConfig.parent}: our story, mission and values.`,
 };
 
 // Draft copy: replace with the forum's approved text before launch.
@@ -30,7 +30,7 @@ const values = [
   {
     icon: Eye,
     title: "Inclusion",
-    text: "A place for young planners from every part of Nigeria.",
+    text: "A place for young planners from every part of Oyo State.",
   },
 ];
 
@@ -47,10 +47,10 @@ export default function AboutPage() {
           <SectionHeading title="Our story" />
           <p className="text-ink-muted">
             The Young Planners Forum was formed to give students, graduates and
-            early-career town planners a structured place within the Nigerian Institute of
-            Town Planners (NITP). It connects them with experienced professionals, helps
-            them prepare for professional registration, and gives them a voice in national
-            planning conversations.
+            early-career town planners in Oyo State a structured place within the Nigerian
+            Institute of Town Planners (NITP). It connects them with experienced professionals, helps
+            them prepare for professional registration, and gives them a voice in planning
+            conversations across Oyo State.
           </p>
           <p className="text-ink-muted">
             Today YPF runs training, mentorship, outreach and networking programmes, and
@@ -64,14 +64,14 @@ export default function AboutPage() {
             <h2 className="text-h3 text-ink">Our mission</h2>
             <p className="text-ink-muted mt-2">
               To equip and connect young planners so they can shape sustainable, inclusive
-              and well-planned Nigerian towns and cities.
+              and well-planned towns and cities across Oyo State.
             </p>
           </div>
           <div className="rounded-card border-line shadow-card border bg-white p-6">
             <h2 className="text-h3 text-ink">Our vision</h2>
             <p className="text-ink-muted mt-2">
               A generation of skilled, ethical planners leading the future of
-              Nigeria&apos;s built environment.
+              Oyo State&apos;s built environment.
             </p>
           </div>
         </div>

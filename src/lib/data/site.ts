@@ -22,8 +22,8 @@ export type SocialLinks = Partial<
 const defaults = {
   stats: {
     members_label: "Growing Network",
-    reach_value: "36+",
-    reach_label: "States & FCT",
+    reach_value: "33",
+    reach_label: "Local governments",
     audience_label: "Students - Graduates MNITP/RTP",
   } satisfies SiteStats,
   contact: { email: "", phone: "", address: "", hours: "" } satisfies ContactInfo,

@@ -27,8 +27,8 @@ export function SettingsForm({ initial }: { initial: SettingsValues }) {
           <h2 className="text-h3 text-ink">Home page figures</h2>
           <div className="grid gap-5 sm:grid-cols-2">
             <Input label="Network label" name="stats.members_label" defaultValue={initial.stats.members_label} error={e["stats.members_label"]} hint="Shown under the members tile, for example “Growing Network”." />
-            <Input label="Reach figure" name="stats.reach_value" defaultValue={initial.stats.reach_value} error={e["stats.reach_value"]} hint="For example “36+”." />
-            <Input label="Reach label" name="stats.reach_label" defaultValue={initial.stats.reach_label} error={e["stats.reach_label"]} hint="For example “States & FCT”." />
+            <Input label="Reach figure" name="stats.reach_value" defaultValue={initial.stats.reach_value} error={e["stats.reach_value"]} hint="For example “33”." />
+            <Input label="Reach label" name="stats.reach_label" defaultValue={initial.stats.reach_label} error={e["stats.reach_label"]} hint="For example “Local governments”." />
             <Input label="Audience label" name="stats.audience_label" defaultValue={initial.stats.audience_label} error={e["stats.audience_label"]} />
           </div>
         </CardBody>

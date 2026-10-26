@@ -40,7 +40,7 @@ export default async function Home() {
         title={
           <>
             Empowering Young Planners for a{" "}
-            <span className="text-highlight">Sustainable Nigeria</span>
+            <span className="text-highlight">Sustainable Oyo State</span>
           </>
         }
         subtitle="The Young Planners Forum (YPF) is a network of young and emerging planning professionals committed to building sustainable cities."
@@ -62,7 +62,7 @@ export default async function Home() {
           <StatTile
             icon={<Users className="size-5" aria-hidden />}
             value={stats.members_label}
-            label="Young planners nationwide"
+            label="Young planners across Oyo State"
           />
           <StatTile
             icon={<Globe2 className="size-5" aria-hidden />}
@@ -104,10 +104,10 @@ export default async function Home() {
           <div className="space-y-4">
             <h2 className="text-h2 text-ink">Who we are</h2>
             <p className="text-ink-muted">
-              YPF brings together students, graduates and early-career planners under the
-              Nigerian Institute of Town Planners. We create room to learn, network and
-              lead, and we put young voices into the conversation about how Nigeria&apos;s
-              towns and cities grow.
+              YPF brings together students, graduates and early-career planners in Oyo State
+              under the Nigerian Institute of Town Planners. We create room to learn,
+              network and lead, and we put young voices into the conversation about how
+              Oyo State&apos;s towns and cities grow.
             </p>
             <ButtonLink href="/about" variant="secondary">
               Our story
@@ -116,7 +116,7 @@ export default async function Home() {
           <ul className="grid gap-3 sm:grid-cols-2">
             {[
               ["Learn", "Workshops, mentorship and professional development."],
-              ["Connect", "A national network of planners across every region."],
+              ["Connect", "A network of planners across Ibadan and every part of Oyo State."],
               ["Advocate", "Youth perspectives on planning policy and practice."],
               ["Grow", "Jobs, internships and pathways to registration."],
             ].map(([t, d]) => (

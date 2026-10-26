@@ -8,11 +8,11 @@ export const metadata: Metadata = { title: "Privacy Policy" };
 // DRAFT text. Have it reviewed by a legal professional before launch (TODO.md, Phase 6).
 const body = `## Who we are
 
-The Young Planners Forum (YPF) is the young professionals' network of the Nigerian Institute of Town Planners (NITP). We run this website and decide how the personal data on it is used (the "data controller").
+The Young Planners Forum (YPF) is the young professionals' network of the Nigerian Institute of Town Planners (NITP) in Oyo State. We run this website and decide how the personal data on it is used (the "data controller").
 
 ## What we collect and why
 
-- **Membership applications and profiles:** name, phone number, state, institution, course, career stage, specialisation, organisation, LinkedIn link, NITP number (if any), your reasons for joining, and your account email. We use these to review your application, run your membership and contact you about it.
+- **Membership applications and profiles:** name, phone number, local government area, institution, course, career stage, specialisation, organisation, LinkedIn link, NITP number (if any), your reasons for joining, and your account email. We use these to review your application, run your membership and contact you about it.
 - **Event registrations:** name and email, to confirm your place and share event updates.
 - **Contact messages:** name, email, subject and message, to reply to you.
 - **Technical data:** a sign-in cookie, and a one-way scrambled form of your network address used only to limit abuse of our forms. We don't use advertising or tracking cookies.

@@ -15,11 +15,11 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image" },
   alternates: { canonical: "./" },
   title: {
-    default: "Young Planners Forum | NITP",
+    default: "Young Planners Forum, Oyo State | NITP",
     template: "%s",
   },
   description:
-    "The Young Planners Forum (YPF) of the Nigerian Institute of Town Planners: a network of young and emerging planning professionals building sustainable cities.",
+    "The Young Planners Forum (YPF) of the Nigerian Institute of Town Planners in Oyo State: a network of young and emerging planning professionals building sustainable cities.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

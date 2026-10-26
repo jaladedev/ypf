@@ -14,7 +14,7 @@ import { moveLeader } from "./actions";
 export const metadata: Metadata = { title: "Leadership | Admin", robots: { index: false } };
 
 const groups = [
-  { key: "national_executive", label: "National Executive" },
+  { key: "national_executive", label: "Executive committee" },
   { key: "coordinator", label: "Coordinators" },
 ] as const;
 

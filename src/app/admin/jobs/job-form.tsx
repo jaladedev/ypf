@@ -48,7 +48,7 @@ export function JobForm({ initial }: { initial: JobFormValues }) {
               <option value="">Not specified</option>
               {Object.entries(experienceLabels).map(([k, l]) => <option key={k} value={k}>{l}</option>)}
             </Select>
-            <Input label="Location" name="location" defaultValue={initial.location} error={e.location} hint="For example: Lagos, or Remote" />
+            <Input label="Location" name="location" defaultValue={initial.location} error={e.location} hint="For example: Ibadan, Oyo State, or Remote" />
             <Input label="Specialisation" name="specialisation" defaultValue={initial.specialisation} error={e.specialisation} hint="For example: Urban design" />
           </div>
           <MarkdownEditor name="description" label="Description" required defaultValue={initial.description} error={e.description} rows={10} />

@@ -17,7 +17,7 @@ export const contactSchema = z.object({
 });
 
 // ---------------------------------------------------------------- membership
-import { nigerianStates } from "@/lib/nigeria";
+import { oyoLgas } from "@/lib/oyo";
 
 const optionalText = (max: number) =>
   z
@@ -36,7 +36,7 @@ export const applicationSchema = z.object({
     .min(7, "Enter a phone number")
     .max(25)
     .regex(/^[+\d][\d\s()-]*$/, "Use digits, spaces and + only"),
-  state: z.enum(nigerianStates, { message: "Choose your state" }),
+  lga: z.enum(oyoLgas, { message: "Choose your local government area" }),
   // Step 2: education
   institution: text(200).min(2, "Enter your institution"),
   career_stage: z.enum(["student", "graduate", "early_career", "professional"], {
@@ -68,7 +68,7 @@ export type ApplicationInput = z.input<typeof applicationSchema>;
 
 /** Fields validated at each step of the Join form. */
 export const joinStepFields = [
-  ["full_name", "phone", "state"],
+  ["full_name", "phone", "lga"],
   ["institution", "career_stage", "qualification", "graduation_year"],
   ["specialisation", "organisation", "linkedin_url", "nitp_number", "motivation"],
 ] as const satisfies readonly (readonly (keyof ApplicationInput)[])[];

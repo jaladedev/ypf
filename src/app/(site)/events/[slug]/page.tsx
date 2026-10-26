@@ -74,9 +74,9 @@ export default async function EventPage({ params }: PageProps<"/events/[slug]">)
           location: {
             "@type": "Place",
             name: event.venue ?? event.city ?? "To be announced",
-            address: { "@type": "PostalAddress", addressLocality: event.city ?? undefined, addressCountry: "NG" },
+            address: { "@type": "PostalAddress", addressLocality: event.city ?? undefined, addressRegion: "Oyo", addressCountry: "NG" },
           },
-          organizer: { "@type": "Organization", name: "Young Planners Forum, Nigerian Institute of Town Planners", url: siteUrl() },
+          organizer: { "@type": "Organization", name: "Young Planners Forum, Oyo State", url: siteUrl() },
           url: `${siteUrl()}/events/${event.slug}`,
         }}
       />

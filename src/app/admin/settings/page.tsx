@@ -24,8 +24,8 @@ export default async function SettingsPage({ searchParams }: PageProps<"/admin/s
   const initial: SettingsValues = {
     stats: {
       members_label: str(stats, "members_label", "Growing Network"),
-      reach_value: str(stats, "reach_value", "36+"),
-      reach_label: str(stats, "reach_label", "States & FCT"),
+      reach_value: str(stats, "reach_value", "33"),
+      reach_label: str(stats, "reach_label", "Local governments"),
       audience_label: str(stats, "audience_label", "Students - Graduates MNITP/RTP"),
     },
     contact: { email: str(contact, "email"), phone: str(contact, "phone"), address: str(contact, "address"), hours: str(contact, "hours") },

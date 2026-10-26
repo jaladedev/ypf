@@ -58,7 +58,7 @@ export function Footer() {
       <div className="border-t border-white/10">
         <Container className="flex flex-col gap-3 py-5 text-xs text-white/65 sm:flex-row sm:items-center sm:justify-between">
           <p>
-            © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
+            © {new Date().getFullYear()} {siteConfig.name}, {siteConfig.region}. All rights reserved.
           </p>
           <ul className="flex gap-5">
             {footerNav.legal.map((l) => (

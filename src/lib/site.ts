@@ -1,10 +1,11 @@
 export const siteConfig = {
   name: "Young Planners Forum",
+  region: "Oyo State",
   shortName: "YPF",
   parent: "Nigerian Institute of Town Planners",
-  tagline: "Empowering young planners for a sustainable Nigeria",
+  tagline: "Empowering young planners for a sustainable Oyo State",
   description:
-    "The Young Planners Forum (YPF) of the Nigerian Institute of Town Planners: a network of young and emerging planning professionals building sustainable cities.",
+    "The Young Planners Forum (YPF) of the Nigerian Institute of Town Planners in Oyo State: a network of young and emerging planning professionals building sustainable cities.",
 } as const;
 
 /** Primary navigation (header). */

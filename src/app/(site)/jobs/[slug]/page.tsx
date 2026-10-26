@@ -54,7 +54,7 @@ export default async function JobPage({ params }: PageProps<"/jobs/[slug]">) {
           validThrough: job.deadline ?? undefined,
           employmentType: { full_time: "FULL_TIME", part_time: "PART_TIME", internship: "INTERN", nysc: "INTERN", volunteer: "VOLUNTEER", contract: "CONTRACTOR" }[job.job_type],
           hiringOrganization: { "@type": "Organization", name: job.organisation },
-          jobLocation: { "@type": "Place", address: { "@type": "PostalAddress", addressLocality: job.location ?? "Nigeria", addressCountry: "NG" } },
+          jobLocation: { "@type": "Place", address: { "@type": "PostalAddress", addressLocality: job.location ?? "Oyo State", addressRegion: "Oyo", addressCountry: "NG" } },
           directApply: false,
           url: `${siteUrl()}/jobs/${job.slug}`,
         }}

@@ -21,9 +21,9 @@ export function LeaderForm({ initial }: { initial: LeaderFormValues }) {
       <Card>
         <CardBody className="space-y-5">
           <Input label="Name" name="name" requiredMark defaultValue={initial.name} error={e.name} maxLength={200} />
-          <Input label="Role" name="role_title" requiredMark defaultValue={initial.role_title} error={e.role_title} hint="For example: National President" maxLength={200} />
+          <Input label="Role" name="role_title" requiredMark defaultValue={initial.role_title} error={e.role_title} hint="For example: Chairperson" maxLength={200} />
           <Select label="Group" name="group" requiredMark defaultValue={initial.group} error={e.group}>
-            <option value="national_executive">National Executive</option>
+            <option value="national_executive">Executive committee</option>
             <option value="coordinator">Coordinators</option>
           </Select>
           <ImageUpload name="photo_url" label="Photo" bucket="media" folder="uploads" defaultValue={initial.photo_url} round hint="A square portrait works best. JPG, PNG or WebP, up to 5 MB." />

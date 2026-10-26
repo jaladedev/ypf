@@ -2,7 +2,7 @@ import "server-only";
 import { esc, sendEmail } from "./resend";
 
 const site = () => (process.env.NEXT_PUBLIC_SITE_URL ?? "").replace(/\/$/, "");
-const sign = "\n\nYoung Planners Forum\nNigerian Institute of Town Planners";
+const sign = "\n\nYoung Planners Forum, Oyo State\nNigerian Institute of Town Planners";
 
 export function sendApplicationReceived(to: string, name: string) {
   return sendEmail({
